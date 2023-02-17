@@ -23,11 +23,9 @@ void Gui::Loop()
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::Begin("Camera");
 
-    //std::jthread j1(&PoseEstimation::UpdateImage, FrontCamera);
+    std::jthread j1(&PoseEstimation::UpdateImage, FrontCamera);
     //std::jthread j2(&PoseEstimation::UpdateImage, BackCamera);
-    //j1.join();
-
-    FrontCamera->UpdateImage();
+    j1.join();
 
     ImGui::Image(FrontCamera->Image->GetTexture(), *FrontCamera->Image->GetSize());
     //ImGui::Image(BackCamera->Image->GetTexture(), *BackCamera->Image->GetSize());
