@@ -1,19 +1,30 @@
 #include "PoseEstimation.h"
 
-PoseEstimation::PoseEstimation(const int cameraIndex, const int x, const int y) 
-{
-	Camera = std::make_unique<cv::VideoCapture>();
-	Camera->open(cameraIndex, cv::CAP_ANY);
-	//Camera->set(cv::CAP_PROP_FRAME_WIDTH, x);
-	//Camera->set(cv::CAP_PROP_FRAME_HEIGHT, y);
+// Variables
+const cv::VideoCaptureAPIs PoseEstimation::CameraAPI = cv::CAP_ANY;
 
-	Frame = std::make_unique<cv::Mat>();
-	Image = std::make_unique<ImageConverter>();
+// Methods
+void Init(std::unique_ptr<cv::VideoCapture>& camera, std::unique_ptr<cv::Mat>& frame, std::unique_ptr<ImageConverter>& image)
+{
+	camera = std::make_unique<cv::VideoCapture>();
+	frame = std::make_unique<cv::Mat>();
+	image = std::make_unique<ImageConverter>();
 }
 
-void PoseEstimation::UpdateImage()
+PoseEstimation::PoseEstimation(const int cameraIndex) 
 {
-	const std::lock_guard lock(UpdateMutex);
+	Init(Camera, Frame, Image);
+	Camera->open(cameraIndex, CameraAPI);
+}
+
+PoseEstimation::PoseEstimation(const char* cameraIp)
+{
+	Init(Camera, Frame, Image);
+	Camera->open(cameraIp, CameraAPI);	
+}
+
+void PoseEstimation::UpdateImage() const
+{
 	Camera->read(*Frame);
 	Image->UpdateMat(*Frame);
 }
@@ -30,5 +41,3 @@ bool PoseEstimation::OpenCamera() const
 
 	return isOpened;
 }
-
-

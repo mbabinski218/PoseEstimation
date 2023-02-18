@@ -5,30 +5,35 @@ const char* Gui::GlslVersion = "#version 330";
 const char* Gui::Title = "Pose estimation";
 const int Gui::Width = 1920;
 const int Gui::Height = 1080;
-PoseEstimation* Gui::FrontCamera = new PoseEstimation(0, 1280, 720);
-std::unique_ptr<PoseEstimation> Gui::BackCamera = std::make_unique<PoseEstimation>(1, 1280, 720);
+PoseEstimation* Gui::FrontCamera = new PoseEstimation(1);
+std::unique_ptr<PoseEstimation> Gui::BackCamera = std::make_unique<PoseEstimation>("http://192.168.1.108:4747/video");
 
 // Methods
+// Before GUI render loop
 void Gui::Init()
 {
     if (!FrontCamera->OpenCamera())
         throw std::exception("Front camera error");
 
-    //if (!BackCamera->OpenCamera())
-    //    throw std::exception("Back camera error");
+    if (!BackCamera->OpenCamera())
+        throw std::exception("Back camera error");
 }
 
+// Inside GUI render loop
 void Gui::Loop()
 {
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::Begin("Camera");
 
-    std::jthread j1(&PoseEstimation::UpdateImage, FrontCamera);
+    //std::jthread j1(&PoseEstimation::UpdateImage, FrontCamera);
     //std::jthread j2(&PoseEstimation::UpdateImage, BackCamera);
-    j1.join();
+    //j1.join();
+
+    FrontCamera->UpdateImage();
+    BackCamera->UpdateImage();
 
     ImGui::Image(FrontCamera->Image->GetTexture(), *FrontCamera->Image->GetSize());
-    //ImGui::Image(BackCamera->Image->GetTexture(), *BackCamera->Image->GetSize());
+    ImGui::Image(BackCamera->Image->GetTexture(), *BackCamera->Image->GetSize());
 
     //imshow("Frame", *Camera->Frame);
 
