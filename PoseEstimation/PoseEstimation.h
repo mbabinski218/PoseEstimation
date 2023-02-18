@@ -6,18 +6,19 @@
 
 class PoseEstimation
 {
-private:
+public:
+//private:
     // Variables
-    const static cv::VideoCaptureAPIs CameraAPI;
     std::unique_ptr<cv::VideoCapture> Camera;
+    std::unique_ptr<ImageConverter> Image;
     std::unique_ptr<cv::Mat> Frame;
 
 public:
-    std::unique_ptr<ImageConverter> Image;
-
     // Methods
-    explicit PoseEstimation(const int cameraIndex);
-    explicit PoseEstimation(const char* cameraIp);
-    bool OpenCamera() const;
+    explicit PoseEstimation(const int cameraIndex, const ImVec2& size, const cv::VideoCaptureAPIs& cameraApi);
+    explicit PoseEstimation(const char* cameraIp, const ImVec2& size, const cv::VideoCaptureAPIs& cameraApi);
+    void SetUpdateCameraThread(std::unique_ptr<std::jthread>& thread) const;
     void UpdateImage() const;
+    bool OpenCamera() const;
+    void* GetTexture() const;
 };

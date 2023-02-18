@@ -16,14 +16,17 @@ public:
 	// Variables
 	const static char* GlslVersion;
 	const static char* Title;
-	const static int Width;
-	const static int Height;
-	static PoseEstimation* FrontCamera;
+	const static ImVec2 WindowSize;
+	const static ImVec2 FrontCameraSize;
+	const static ImVec2 BackCameraSize;
+	const static cv::VideoCaptureAPIs CameraApi;
+	static std::unique_ptr<PoseEstimation> FrontCamera;
 	static std::unique_ptr<PoseEstimation> BackCamera;
+	static std::unique_ptr<std::jthread> FrontCameraUpdateThread;
+	static std::unique_ptr<std::jthread> BackCameraUpdateThread;
 
 	// Methods
 	static void Render();
-
 private:
 	static void Init();
 	static void Loop();

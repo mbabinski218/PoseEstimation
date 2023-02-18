@@ -6,6 +6,8 @@
 
 class ImageConverter
 {
+public:
+//private:
 	// Variables
 	GLuint Texture;
 	cv::Mat Mat;

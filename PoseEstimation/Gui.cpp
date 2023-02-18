@@ -3,10 +3,14 @@
 // Variables
 const char* Gui::GlslVersion = "#version 330";
 const char* Gui::Title = "Pose estimation";
-const int Gui::Width = 1920;
-const int Gui::Height = 1080;
-PoseEstimation* Gui::FrontCamera = new PoseEstimation(1);
-std::unique_ptr<PoseEstimation> Gui::BackCamera = std::make_unique<PoseEstimation>("http://192.168.1.108:4747/video");
+const ImVec2 Gui::WindowSize = ImVec2(1920, 1080);
+const ImVec2 Gui::FrontCameraSize = ImVec2(640, 480);
+const ImVec2 Gui::BackCameraSize = ImVec2(640, 480);
+const cv::VideoCaptureAPIs Gui::CameraApi = cv::CAP_ANY;
+std::unique_ptr<PoseEstimation> Gui::FrontCamera = std::make_unique<PoseEstimation>(1, FrontCameraSize, CameraApi);
+std::unique_ptr<PoseEstimation> Gui::BackCamera = std::make_unique<PoseEstimation>("http://192.168.1.108:4747/video", BackCameraSize, CameraApi);
+std::unique_ptr<std::jthread> Gui::FrontCameraUpdateThread = std::make_unique<std::jthread>();
+std::unique_ptr<std::jthread> Gui::BackCameraUpdateThread = std::make_unique<std::jthread>();
 
 // Methods
 // Before GUI render loop
@@ -14,9 +18,11 @@ void Gui::Init()
 {
     if (!FrontCamera->OpenCamera())
         throw std::exception("Front camera error");
-
     if (!BackCamera->OpenCamera())
         throw std::exception("Back camera error");
+
+    FrontCamera->SetUpdateCameraThread(FrontCameraUpdateThread);
+    BackCamera->SetUpdateCameraThread(BackCameraUpdateThread);
 }
 
 // Inside GUI render loop
@@ -25,17 +31,14 @@ void Gui::Loop()
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     ImGui::Begin("Camera");
 
-    //std::jthread j1(&PoseEstimation::UpdateImage, FrontCamera);
-    //std::jthread j2(&PoseEstimation::UpdateImage, BackCamera);
-    //j1.join();
-
     FrontCamera->UpdateImage();
     BackCamera->UpdateImage();
 
-    ImGui::Image(FrontCamera->Image->GetTexture(), *FrontCamera->Image->GetSize());
-    ImGui::Image(BackCamera->Image->GetTexture(), *BackCamera->Image->GetSize());
+    ImGui::Image(FrontCamera->GetTexture(), FrontCameraSize);
+    ImGui::Image(BackCamera->GetTexture(), BackCameraSize);
 
-    //imshow("Frame", *Camera->Frame);
+    //imshow("Front", FrontCamera->Image->Mat);
+    //imshow("Back", BackCamera->Image->Mat);
 
     ImGui::End();
 }
@@ -52,7 +55,7 @@ void Gui::Render()
         throw std::exception("GLFW init failed");
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(Width, Height, Title, nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(static_cast<int>(WindowSize.x), static_cast<int>(WindowSize.y), Title, nullptr, nullptr);
     if (window == nullptr)
         throw std::exception("Gui window error");
     glfwMakeContextCurrent(window);
