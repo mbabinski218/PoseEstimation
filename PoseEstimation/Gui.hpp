@@ -7,7 +7,7 @@
 #include <exception>
 #include <imgui.h>
 #include <cstdio>
-#include "PoseEstimation.h"
+#include "PoseEstimation.hpp"
 #include <thread>
 
 class Gui

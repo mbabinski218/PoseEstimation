@@ -1,8 +1,9 @@
 #pragma once
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/core/cuda.hpp>
 #include <opencv2/videoio.hpp>
-#include "ImageConverter.h"
+#include <opencv2/opencv.hpp>
+#include "ImageConverter.hpp"
 
 class PoseEstimation
 {
@@ -11,6 +12,7 @@ public:
     // Variables
     std::unique_ptr<cv::VideoCapture> Camera;
     std::unique_ptr<ImageConverter> Image;
+    //std::unique_ptr<cv::cuda::GpuMat> Frame;
     std::unique_ptr<cv::Mat> Frame;
 
 public:

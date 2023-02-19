@@ -1,7 +1,7 @@
-#include "Gui.h"
+#include "Gui.hpp"
 
 // Variables
-const char* Gui::GlslVersion = "#version 330";
+const char* Gui::GlslVersion = "#version 430 core";
 const char* Gui::Title = "Pose estimation";
 const ImVec2 Gui::WindowSize = ImVec2(1920, 1080);
 const ImVec2 Gui::FrontCameraSize = ImVec2(640, 480);
@@ -36,9 +36,9 @@ void Gui::Loop()
 
     ImGui::Image(FrontCamera->GetTexture(), FrontCameraSize);
     ImGui::Image(BackCamera->GetTexture(), BackCameraSize);
-
-    //imshow("Front", FrontCamera->Image->Mat);
-    //imshow("Back", BackCamera->Image->Mat);
+       
+    //imshow("Front", *FrontCamera->Frame);
+    //imshow("Back", *BackCamera->Frame);
 
     ImGui::End();
 }
@@ -59,7 +59,7 @@ void Gui::Render()
     if (window == nullptr)
         throw std::exception("Gui window error");
     glfwMakeContextCurrent(window);
-    //glfwSwapInterval(1);
+    glfwSwapInterval(1);
 
     // Setup ImGui context
     IMGUI_CHECKVERSION();

@@ -1,9 +1,11 @@
-#include "PoseEstimation.h"
+#include "PoseEstimation.hpp"
 
 // Methods
+//void Init(std::unique_ptr<cv::VideoCapture>& camera, std::unique_ptr<cv::cuda::GpuMat>& frame, std::unique_ptr<ImageConverter>& image)
 void Init(std::unique_ptr<cv::VideoCapture>& camera, std::unique_ptr<cv::Mat>& frame, std::unique_ptr<ImageConverter>& image)
 {
 	camera = std::make_unique<cv::VideoCapture>();
+	//frame = std::make_unique<cv::cuda::GpuMat>();
 	frame = std::make_unique<cv::Mat>();
 	image = std::make_unique<ImageConverter>();
 }
@@ -38,14 +40,14 @@ void PoseEstimation::SetUpdateCameraThread(std::unique_ptr<std::jthread>& thread
 	thread = std::make_unique<std::jthread>([=]() {
 		while (true)
 		{
-			Camera->grab();
+			Camera->read(*Frame);
+			cvtColor(*Frame, *Frame, cv::COLOR_BGR2RGB);
 		}
 	});
 }
 
 void PoseEstimation::UpdateImage() const
-{
-	Camera->retrieve(*Frame);
+{	
 	Image->UpdateMat(*Frame);
 }
 

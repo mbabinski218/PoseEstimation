@@ -148,8 +148,8 @@
     <ClCompile Include="PoseEstimation.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Gui.h" />
-    <ClInclude Include="ImageConverter.h" />
+    <ClInclude Include="Gui.hpp" />
+    <ClInclude Include="ImageConverter.hpp" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_glfw.h" />
@@ -159,7 +159,7 @@
     <ClInclude Include="imgui\imstb_rectpack.h" />
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
-    <ClInclude Include="PoseEstimation.h" />
+    <ClInclude Include="PoseEstimation.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

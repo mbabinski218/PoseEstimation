@@ -56,7 +56,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Gui.h">
+    <ClInclude Include="Gui.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="imgui\imconfig.h">
@@ -86,10 +86,10 @@
     <ClInclude Include="imgui\imgui_impl_glfw.h">
       <Filter>Header Files\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="PoseEstimation.h">
+    <ClInclude Include="PoseEstimation.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ImageConverter.h">
+    <ClInclude Include="ImageConverter.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

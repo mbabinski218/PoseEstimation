@@ -1,6 +1,6 @@
 #include <boost/exception/diagnostic_information.hpp> 
 #include <iostream>
-#include "Gui.h"
+#include "Gui.hpp"
 
 #ifdef _WIN32
 #include "Windows.h"
@@ -10,7 +10,6 @@ int main()
 {
     try
     {
-        //std::cout << cv::getBuildInformation() << "\n";
         Gui::Render();
     }
     catch(...)
