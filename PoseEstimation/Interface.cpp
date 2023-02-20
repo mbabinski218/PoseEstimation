@@ -10,7 +10,7 @@ int main()
 {
     try
     {
-        Gui::Render();
+    	Gui::Render();
     }
     catch(...)
     {

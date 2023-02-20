@@ -1,6 +1,5 @@
 #include "ImageConverter.hpp"
 
-//void ImageConverter::LoadCvMat(const cv::cuda::GpuMat& frame, const bool changeColorOrder)
 void ImageConverter::LoadCvMat(const cv::Mat& frame)
 {
 	if (frame.empty() || Texture != 0)
@@ -17,7 +16,6 @@ void ImageConverter::LoadCvMat(const cv::Mat& frame)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, frame.cols, frame.rows, 0, GL_RGB, GL_UNSIGNED_BYTE, frame.ptr());
 }
 
-//void ImageConverter::UpdateMat(const cv::cuda::GpuMat& frame, const bool changeColorOrder)
 void ImageConverter::UpdateMat(const cv::Mat& frame)
 {
 	// if does not have the same size then i need to recreate the texture from scratch

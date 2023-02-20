@@ -1,26 +1,23 @@
 #pragma once
 
-#include <opencv2/core/cuda.hpp>
-#include <opencv2/videoio.hpp>
-#include <opencv2/opencv.hpp>
+#include <opencv2/dnn.hpp>
+#include <opencv2/core.hpp>
 #include "ImageConverter.hpp"
+#include <filesystem>
 
 class PoseEstimation
-{
-public:
-//private:
-    // Variables
-    std::unique_ptr<cv::VideoCapture> Camera;
-    std::unique_ptr<ImageConverter> Image;
-    //std::unique_ptr<cv::cuda::GpuMat> Frame;
-    std::unique_ptr<cv::Mat> Frame;
+{	
+	// Variables
+	std::unique_ptr<cv::dnn::Net> Net;
+	std::unique_ptr<ImageConverter> Image;
 
+	// Methods
 public:
-    // Methods
-    explicit PoseEstimation(const int cameraIndex, const ImVec2& size, const cv::VideoCaptureAPIs& cameraApi);
-    explicit PoseEstimation(const char* cameraIp, const ImVec2& size, const cv::VideoCaptureAPIs& cameraApi);
-    void SetUpdateCameraThread(std::unique_ptr<std::jthread>& thread) const;
-    void UpdateImage() const;
-    bool OpenCamera() const;
-    void* GetTexture() const;
+	PoseEstimation(const std::string& protoTextPath, const std::string& caffeModel);
+	void Create(const std::unique_ptr<cv::Mat>& mat) const;
+	void Update(const std::unique_ptr<cv::Mat>& mat) const;
+	void* GetTexture() const;
+	static void ToPose(std::unique_ptr<cv::Mat>& mat);
+private:
+	std::unique_ptr<cv::Mat> FindPose(const std::unique_ptr<cv::Mat>& mat) const;
 };

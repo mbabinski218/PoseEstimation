@@ -48,10 +48,13 @@
     <ClCompile Include="imgui\imgui_impl_glfw.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="PoseEstimation.cpp">
+    <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ImageConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PoseEstimation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -86,10 +89,13 @@
     <ClInclude Include="imgui\imgui_impl_glfw.h">
       <Filter>Header Files\imgui</Filter>
     </ClInclude>
-    <ClInclude Include="PoseEstimation.hpp">
+    <ClInclude Include="Camera.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ImageConverter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PoseEstimation.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

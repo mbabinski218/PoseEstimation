@@ -7,10 +7,15 @@ const ImVec2 Gui::WindowSize = ImVec2(1920, 1080);
 const ImVec2 Gui::FrontCameraSize = ImVec2(640, 480);
 const ImVec2 Gui::BackCameraSize = ImVec2(640, 480);
 const cv::VideoCaptureAPIs Gui::CameraApi = cv::CAP_ANY;
-std::unique_ptr<PoseEstimation> Gui::FrontCamera = std::make_unique<PoseEstimation>(1, FrontCameraSize, CameraApi);
-std::unique_ptr<PoseEstimation> Gui::BackCamera = std::make_unique<PoseEstimation>("http://192.168.1.108:4747/video", BackCameraSize, CameraApi);
+const std::string Gui::ProtoTextPath = R"(\models\pose\coco\pose_deploy_linevec.prototxt)";
+const std::string Gui::CaffeModel = R"(\models\pose\coco\pose_iter_440000.caffemodel)";
+bool Gui::ShowPoseEstimation = false;
+std::unique_ptr<Camera> Gui::FrontCamera = std::make_unique<Camera>(0, FrontCameraSize, CameraApi);
+std::unique_ptr<Camera> Gui::BackCamera = std::make_unique<Camera>("http://192.168.1.108:4747/video", BackCameraSize, CameraApi);
 std::unique_ptr<std::jthread> Gui::FrontCameraUpdateThread = std::make_unique<std::jthread>();
 std::unique_ptr<std::jthread> Gui::BackCameraUpdateThread = std::make_unique<std::jthread>();
+std::unique_ptr<PoseEstimation> Gui::FrontPoseEstimation = std::make_unique<PoseEstimation>(ProtoTextPath, CaffeModel);
+//std::unique_ptr<PoseEstimation> Gui::BackPoseEstimation = std::make_unique<PoseEstimation>(ProtoTextPath, CaffeModel);
 
 // Methods
 // Before GUI render loop
@@ -23,23 +28,47 @@ void Gui::Init()
 
     FrontCamera->SetUpdateCameraThread(FrontCameraUpdateThread);
     BackCamera->SetUpdateCameraThread(BackCameraUpdateThread);
+
+    FrontPoseEstimation->Create(FrontCamera->GetMat());
+    //BackPoseEstimation->Create(BackCamera->GetMat());
 }
 
 // Inside GUI render loop
 void Gui::Loop()
 {
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::Begin("Camera");
+    //ImGui::ShowDemoWindow();
 
+    // Debug window
+	ImGui::Text("%.1f FPS", static_cast<double>(ImGui::GetIO().Framerate));
+    ImGui::Spacing();
+    ImGui::Checkbox("Show pose estimation", &ShowPoseEstimation);
+
+    // Front camera window
+	ImGui::Begin("Front camera");
     FrontCamera->UpdateImage();
+    if (ShowPoseEstimation)
+    {
+        FrontPoseEstimation->Update(FrontCamera->GetMat());
+	    /*ImGui::Image(FrontPoseEstimation->GetTexture(), FrontCameraSize);*/
+    }
+    else    
+    {        
+	    ImGui::Image(FrontCamera->GetTexture(), FrontCameraSize);
+    }
+    ImGui::End();
+
+    // Back camera window
+    ImGui::Begin("Back camera");
     BackCamera->UpdateImage();
-
-    ImGui::Image(FrontCamera->GetTexture(), FrontCameraSize);
-    ImGui::Image(BackCamera->GetTexture(), BackCameraSize);
-       
-    //imshow("Front", *FrontCamera->Frame);
-    //imshow("Back", *BackCamera->Frame);
-
+    if(ShowPoseEstimation)
+    {
+        //BackPoseEstimation->Update(BackCamera->GetMat());
+		/*ImGui::Image(BackPoseEstimation->GetTexture(), BackCameraSize);*/
+    }
+    else
+    {        
+		ImGui::Image(BackCamera->GetTexture(), BackCameraSize);
+    }
     ImGui::End();
 }
 

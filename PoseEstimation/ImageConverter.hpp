@@ -16,9 +16,7 @@ public:
 public:
 	// Methods
 	ImageConverter() : Texture(0) { }
-	//void LoadCvMat(const cv::cuda::GpuMat& frame, const bool changeColorOrder = true);
 	void LoadCvMat(const cv::Mat& frame);
-	//void UpdateMat(const cv::cuda::GpuMat& frame, const bool changeColorOrder = true);
 	void UpdateMat(const cv::Mat& frame);
 	void* GetTexture() const;
 	void Clear();

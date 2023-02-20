@@ -361,3 +361,15 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/PoseEstimation/models/face/haarcascade_frontalface_alt.xml
+/PoseEstimation/models/face/pose_deploy.prototxt
+/PoseEstimation/models/face/pose_iter_116000.caffemodel
+/PoseEstimation/models/hand/pose_deploy.prototxt
+/PoseEstimation/models/hand/pose_iter_102000.caffemodel
+/PoseEstimation/models/pose/body_25/pose_deploy.prototxt
+/PoseEstimation/models/pose/body_25/pose_iter_584000.caffemodel
+/PoseEstimation/models/pose/coco/pose_deploy_linevec.prototxt
+/PoseEstimation/models/pose/coco/pose_iter_440000.caffemodel
+/PoseEstimation/models/pose/mpi/pose_deploy_linevec.prototxt
+/PoseEstimation/models/pose/mpi/pose_deploy_linevec_faster_4_stages.prototxt
+/PoseEstimation/models/pose/mpi/pose_iter_160000.caffemodel

@@ -1,57 +1,52 @@
 #include "PoseEstimation.hpp"
 
+#include <opencv2/highgui.hpp>
+
 // Methods
-//void Init(std::unique_ptr<cv::VideoCapture>& camera, std::unique_ptr<cv::cuda::GpuMat>& frame, std::unique_ptr<ImageConverter>& image)
-void Init(std::unique_ptr<cv::VideoCapture>& camera, std::unique_ptr<cv::Mat>& frame, std::unique_ptr<ImageConverter>& image)
+PoseEstimation::PoseEstimation(const std::string& protoTextPath, const std::string& caffeModel)
+	: Image(std::make_unique<ImageConverter>())
 {
-	camera = std::make_unique<cv::VideoCapture>();
-	//frame = std::make_unique<cv::cuda::GpuMat>();
-	frame = std::make_unique<cv::Mat>();
-	image = std::make_unique<ImageConverter>();
+	const auto currentPath = std::filesystem::current_path().string();
+	auto net = cv::dnn::readNetFromCaffe(currentPath + protoTextPath, currentPath + caffeModel);
+	Net = std::make_unique<cv::dnn::Net>(net);
+
+	if (net.empty())
+		throw std::exception("Error when reading model");
 }
 
-PoseEstimation::PoseEstimation(const int cameraIndex, const ImVec2& size, const cv::VideoCaptureAPIs& cameraApi)
+std::unique_ptr<cv::Mat> PoseEstimation::FindPose(const std::unique_ptr<cv::Mat>& mat) const
 {
-	Init(Camera, Frame, Image);
-	Camera->open(cameraIndex, cameraApi);
-}
-
-PoseEstimation::PoseEstimation(const char* cameraIp, const ImVec2& size, const cv::VideoCaptureAPIs& cameraApi)
-{
-	Init(Camera, Frame, Image);
-	Camera->open(cameraIp, cameraApi);	
-}
-
-bool PoseEstimation::OpenCamera() const
-{
-	const bool isOpened = Camera->isOpened();
-
-	if (isOpened)
-	{
-		Camera->read(*Frame);
-		Image->LoadCvMat(*Frame);
-	}
-
-	return isOpened;
-}
-
-void PoseEstimation::SetUpdateCameraThread(std::unique_ptr<std::jthread>& thread) const
-{
-	thread = std::make_unique<std::jthread>([=]() {
-		while (true)
-		{
-			Camera->read(*Frame);
-			cvtColor(*Frame, *Frame, cv::COLOR_BGR2RGB);
-		}
+	std::unique_ptr<cv::Mat> pose;
+	const auto thread = std::make_unique<std::jthread>([&]() {
+		Net->setInput(cv::dnn::blobFromImage(*mat));
+		pose = std::make_unique<cv::Mat>(Net->forward());
 	});
+	thread->join();
+
+	return pose;
 }
 
-void PoseEstimation::UpdateImage() const
-{	
-	Image->UpdateMat(*Frame);
+void PoseEstimation::Create(const std::unique_ptr<cv::Mat>& mat) const
+{
+	const auto pose = FindPose(mat);
+	
+	Image->LoadCvMat(*pose);
+}
+
+void PoseEstimation::Update(const std::unique_ptr<cv::Mat>& mat) const 
+{
+	const auto pose = FindPose(mat);
+	
+	Image->UpdateMat(*pose);
+	cv::imshow("pose", *pose);
 }
 
 void* PoseEstimation::GetTexture() const
 {
 	return Image->GetTexture();
+}
+
+void PoseEstimation::ToPose(std::unique_ptr<cv::Mat>& mat)
+{
+	throw std::logic_error("Not implemented");
 }

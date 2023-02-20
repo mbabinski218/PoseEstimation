@@ -1,13 +1,14 @@
 #pragma once
 
 #include "imgui_impl_opengl3.h"
+#include "PoseEstimation.hpp"
 #include "imgui_impl_glfw.h"
 #include <corecrt_math.h>
 #include <GLFW/glfw3.h>
 #include <exception>
 #include <imgui.h>
 #include <cstdio>
-#include "PoseEstimation.hpp"
+#include "Camera.hpp"
 #include <thread>
 
 class Gui
@@ -20,10 +21,15 @@ public:
 	const static ImVec2 FrontCameraSize;
 	const static ImVec2 BackCameraSize;
 	const static cv::VideoCaptureAPIs CameraApi;
-	static std::unique_ptr<PoseEstimation> FrontCamera;
-	static std::unique_ptr<PoseEstimation> BackCamera;
+	const static std::string ProtoTextPath;
+	const static std::string CaffeModel;
+	static bool ShowPoseEstimation;
+	static std::unique_ptr<Camera> FrontCamera;
+	static std::unique_ptr<Camera> BackCamera;
 	static std::unique_ptr<std::jthread> FrontCameraUpdateThread;
 	static std::unique_ptr<std::jthread> BackCameraUpdateThread;
+	static std::unique_ptr<PoseEstimation> FrontPoseEstimation;
+	//static std::unique_ptr<PoseEstimation> BackPoseEstimation;
 
 	// Methods
 	static void Render();
