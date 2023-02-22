@@ -8,16 +8,16 @@ void Init(std::unique_ptr<cv::VideoCapture>& videoCapture, std::unique_ptr<cv::M
 	image = std::make_unique<ImageConverter>();
 }
 
-Camera::Camera(const int cameraIndex, const ImVec2& size, const cv::VideoCaptureAPIs& cameraApi)
+Camera::Camera(const CameraLinker<int>& linker, const ImVec2& size, const cv::VideoCaptureAPIs& cameraApi)
 {
 	Init(VideoCapture, Frame, Image);
-	VideoCapture->open(cameraIndex, cameraApi);
+	VideoCapture->open(linker.Link, cameraApi);
 }
 
-Camera::Camera(const char* cameraIp, const ImVec2& size, const cv::VideoCaptureAPIs& cameraApi)
+Camera::Camera(const CameraLinker<const char*>& linker, const ImVec2& size, const cv::VideoCaptureAPIs& cameraApi)
 {
 	Init(VideoCapture, Frame, Image);
-	VideoCapture->open(cameraIp, cameraApi);	
+	VideoCapture->open(linker.Link, cameraApi);	
 }
 
 bool Camera::OpenCamera() const
@@ -39,7 +39,7 @@ void Camera::SetUpdateCameraThread(std::unique_ptr<std::jthread>& thread) const
 		while (true)
 		{
 			VideoCapture->read(*Frame);
-			//cvtColor(*Frame, *Frame, cv::COLOR_BGR2RGB);
+			cvtColor(*Frame, *Frame, cv::COLOR_BGR2RGB);
 		}
 	});
 }

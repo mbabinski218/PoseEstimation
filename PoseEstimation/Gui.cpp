@@ -1,25 +1,15 @@
 #include "Gui.hpp"
 
-// Variables
-const char* Gui::GlslVersion = "#version 430 core";
-const char* Gui::Title = "Pose estimation";
-const ImVec2 Gui::WindowSize = ImVec2(1920, 1080);
-const ImVec2 Gui::FrontCameraSize = ImVec2(640, 480);
-const ImVec2 Gui::BackCameraSize = ImVec2(640, 480);
-const cv::VideoCaptureAPIs Gui::CameraApi = cv::CAP_ANY;
-const std::string Gui::ProtoTextPath = R"(\models\pose\coco\pose_deploy_linevec.prototxt)";
-const std::string Gui::CaffeModel = R"(\models\pose\coco\pose_iter_440000.caffemodel)";
-bool Gui::ShowPoseEstimation = false;
-std::unique_ptr<Camera> Gui::FrontCamera = std::make_unique<Camera>(0, FrontCameraSize, CameraApi);
-std::unique_ptr<Camera> Gui::BackCamera = std::make_unique<Camera>("http://192.168.1.108:4747/video", BackCameraSize, CameraApi);
-std::unique_ptr<std::jthread> Gui::FrontCameraUpdateThread = std::make_unique<std::jthread>();
-std::unique_ptr<std::jthread> Gui::BackCameraUpdateThread = std::make_unique<std::jthread>();
-std::unique_ptr<PoseEstimation> Gui::FrontPoseEstimation = std::make_unique<PoseEstimation>(ProtoTextPath, CaffeModel);
-//std::unique_ptr<PoseEstimation> Gui::BackPoseEstimation = std::make_unique<PoseEstimation>(ProtoTextPath, CaffeModel);
-
 // Methods
+Gui::Gui(const std::shared_ptr<Config>& config) : GuiConfig(config)
+{
+    FrontCamera = std::make_unique<Camera>(config->FrontCameraLinker, config->FrontCameraSize, config->CameraApi);
+    BackCamera = std::make_unique<Camera>(config->BackCameraLinker, config->BackCameraSize, config->CameraApi);
+    PoseEstimator = std::make_unique<PoseEstimation>(config->ProtoTextPath, config->CaffeModel, config->DnnMode);
+}
+
 // Before GUI render loop
-void Gui::Init()
+void Gui::Init() const
 {
     if (!FrontCamera->OpenCamera())
         throw std::exception("Front camera error");
@@ -29,12 +19,11 @@ void Gui::Init()
     FrontCamera->SetUpdateCameraThread(FrontCameraUpdateThread);
     BackCamera->SetUpdateCameraThread(BackCameraUpdateThread);
 
-    FrontPoseEstimation->Create(FrontCamera->GetMat());
-    //BackPoseEstimation->Create(BackCamera->GetMat());
+    PoseEstimator->Create(FrontCamera->GetMat());
 }
 
 // Inside GUI render loop
-void Gui::Loop()
+void Gui::Loop() const
 {
     //ImGui::ShowDemoWindow();
 
@@ -48,26 +37,26 @@ void Gui::Loop()
     FrontCamera->UpdateImage();
     if (ShowPoseEstimation)
     {
-        FrontPoseEstimation->Update(FrontCamera->GetMat());
-	    /*ImGui::Image(FrontPoseEstimation->GetTexture(), FrontCameraSize);*/
+        PoseEstimator->Update(FrontCamera->GetMat());
+	    ImGui::Image(PoseEstimator->GetTexture(), GuiConfig->FrontCameraSize);
     }
     else    
     {        
-	    ImGui::Image(FrontCamera->GetTexture(), FrontCameraSize);
+	    ImGui::Image(FrontCamera->GetTexture(), GuiConfig->FrontCameraSize);
     }
     ImGui::End();
 
-    // Back camera window
+	// Back camera window
     ImGui::Begin("Back camera");
     BackCamera->UpdateImage();
     if(ShowPoseEstimation)
     {
-        //BackPoseEstimation->Update(BackCamera->GetMat());
-		/*ImGui::Image(BackPoseEstimation->GetTexture(), BackCameraSize);*/
+        PoseEstimator->Update(BackCamera->GetMat());
+		ImGui::Image(PoseEstimator->GetTexture(), GuiConfig->BackCameraSize);
     }
     else
     {        
-		ImGui::Image(BackCamera->GetTexture(), BackCameraSize);
+		ImGui::Image(BackCamera->GetTexture(), GuiConfig->BackCameraSize);
     }
     ImGui::End();
 }
@@ -77,14 +66,15 @@ static void GlfwErrorCallback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-void Gui::Render()
+void Gui::Render() const
 {
     glfwSetErrorCallback(GlfwErrorCallback);
     if (!glfwInit())
         throw std::exception("GLFW init failed");
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(static_cast<int>(WindowSize.x), static_cast<int>(WindowSize.y), Title, nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(static_cast<int>(GuiConfig->WindowSize.x), 
+        static_cast<int>(GuiConfig->WindowSize.y), GuiConfig->Title, nullptr, nullptr);
     if (window == nullptr)
         throw std::exception("Gui window error");
     glfwMakeContextCurrent(window);
@@ -101,7 +91,7 @@ void Gui::Render()
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init(GlslVersion);
+    ImGui_ImplOpenGL3_Init(GuiConfig->GlslVersion);
 
     constexpr auto clearColor = ImVec4(0.10f, 0.10f, 0.10f, 1.0f);
 
