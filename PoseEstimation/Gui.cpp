@@ -1,39 +1,63 @@
-#include "Gui.h"
-
-// Variables
-const char* Gui::GlslVersion = "#version 330";
-const char* Gui::Title = "Pose estimation";
-const int Gui::Width = 1920;
-const int Gui::Height = 1080;
-PoseEstimation* Gui::FrontCamera = new PoseEstimation(0, 1280, 720);
-std::unique_ptr<PoseEstimation> Gui::BackCamera = std::make_unique<PoseEstimation>(1, 1280, 720);
+#include "Gui.hpp"
 
 // Methods
-void Gui::Init()
+Gui::Gui(const std::shared_ptr<Config>& config) : GuiConfig(config)
+{
+    FrontCamera = std::make_unique<Camera>(config->FrontCameraLinker, config->FrontCameraSize, config->CameraApi);
+    BackCamera = std::make_unique<Camera>(config->BackCameraLinker, config->BackCameraSize, config->CameraApi);
+    PoseEstimator = std::make_unique<PoseEstimation>(config->ProtoTextPath, config->CaffeModel, config->DnnMode);
+}
+
+// Before GUI render loop
+void Gui::Init() const
 {
     if (!FrontCamera->OpenCamera())
         throw std::exception("Front camera error");
+    if (!BackCamera->OpenCamera())
+        throw std::exception("Back camera error");
 
-    //if (!BackCamera->OpenCamera())
-    //    throw std::exception("Back camera error");
+    FrontCamera->SetUpdateCameraThread(FrontCameraUpdateThread);
+    BackCamera->SetUpdateCameraThread(BackCameraUpdateThread);
+
+    PoseEstimator->Create(FrontCamera->GetMat());
 }
 
-void Gui::Loop()
+// Inside GUI render loop
+void Gui::Loop() const
 {
-    ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0 / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-    ImGui::Begin("Camera");
+    //ImGui::ShowDemoWindow();
 
-    //std::jthread j1(&PoseEstimation::UpdateImage, FrontCamera);
-    //std::jthread j2(&PoseEstimation::UpdateImage, BackCamera);
-    //j1.join();
+    // Debug window
+	ImGui::Text("%.1f FPS", static_cast<double>(ImGui::GetIO().Framerate));
+    ImGui::Spacing();
+    ImGui::Checkbox("Show pose estimation", &ShowPoseEstimation);
 
+    // Front camera window
+	ImGui::Begin("Front camera");
     FrontCamera->UpdateImage();
+    if (ShowPoseEstimation)
+    {
+        PoseEstimator->Update(FrontCamera->GetMat());
+	    ImGui::Image(PoseEstimator->GetTexture(), GuiConfig->FrontCameraSize);
+    }
+    else    
+    {        
+	    ImGui::Image(FrontCamera->GetTexture(), GuiConfig->FrontCameraSize);
+    }
+    ImGui::End();
 
-    ImGui::Image(FrontCamera->Image->GetTexture(), *FrontCamera->Image->GetSize());
-    //ImGui::Image(BackCamera->Image->GetTexture(), *BackCamera->Image->GetSize());
-
-    //imshow("Frame", *Camera->Frame);
-
+	// Back camera window
+    ImGui::Begin("Back camera");
+    BackCamera->UpdateImage();
+    if(ShowPoseEstimation)
+    {
+        PoseEstimator->Update(BackCamera->GetMat());
+		ImGui::Image(PoseEstimator->GetTexture(), GuiConfig->BackCameraSize);
+    }
+    else
+    {        
+		ImGui::Image(BackCamera->GetTexture(), GuiConfig->BackCameraSize);
+    }
     ImGui::End();
 }
 
@@ -42,18 +66,19 @@ static void GlfwErrorCallback(int error, const char* description)
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
 
-void Gui::Render()
+void Gui::Render() const
 {
     glfwSetErrorCallback(GlfwErrorCallback);
     if (!glfwInit())
         throw std::exception("GLFW init failed");
 
     // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(Width, Height, Title, nullptr, nullptr);
+    GLFWwindow* window = glfwCreateWindow(static_cast<int>(GuiConfig->WindowSize.x), 
+        static_cast<int>(GuiConfig->WindowSize.y), GuiConfig->Title, nullptr, nullptr);
     if (window == nullptr)
         throw std::exception("Gui window error");
     glfwMakeContextCurrent(window);
-    //glfwSwapInterval(1);
+    glfwSwapInterval(1);
 
     // Setup ImGui context
     IMGUI_CHECKVERSION();
@@ -66,7 +91,7 @@ void Gui::Render()
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init(GlslVersion);
+    ImGui_ImplOpenGL3_Init(GuiConfig->GlslVersion);
 
     constexpr auto clearColor = ImVec4(0.10f, 0.10f, 0.10f, 1.0f);
 
