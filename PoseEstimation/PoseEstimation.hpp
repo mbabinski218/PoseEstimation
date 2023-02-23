@@ -10,17 +10,24 @@
 class PoseEstimation
 {	
 	// Variables
-	std::unique_ptr<cv::dnn::Net> Net;
+	std::shared_ptr<cv::dnn::Net> Net;
 	std::unique_ptr<ImageConverter> Image;
+
+	std::vector<std::vector<int>> PosePairs;
+	double ThreshHold = 0.01f;
+	cv::Size2f Size;
+	int PoseParts;
 
 	// Methods
 public:
-	PoseEstimation(const std::string& protoTextPath, const std::string& caffeModel, const DnnTargetMode& dnnMode);
-	void Create(const std::unique_ptr<cv::Mat>& mat) const;
+	explicit PoseEstimation(std::shared_ptr<cv::dnn::Net> net, const ImVec2& size, const int& poseParts, 
+		const std::vector<std::vector<int>>& posePairs, const double& threshHold);
 	void Update(const std::unique_ptr<cv::Mat>& mat) const;
 	void* GetTexture() const;
+
+	static std::shared_ptr<cv::dnn::Net> CreateDnnNet(const std::string& protoTextPath, const std::string& caffeModel, const DnnTargetMode& dnnMode);
+
 private:
 	std::unique_ptr<cv::Mat> FindPose(const std::unique_ptr<cv::Mat>& mat) const;
-	void ConvertPoseToImage(const std::unique_ptr<cv::Mat>& outputBlob, const std::unique_ptr<cv::Mat>& mat) const;
-	//void SplitNetOutputBlobToParts(cv::Mat& netOutputBlob, const cv::Size& targetSize, std::vector<cv::Mat>& netOutputParts) const;
+	void AddPoseToImage(const std::unique_ptr<cv::Mat>& outputBlob, const std::unique_ptr<cv::Mat>& mat) const;
 };

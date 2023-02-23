@@ -31,12 +31,17 @@ public:
 	DnnTargetMode DnnMode;
 	CameraLinker<int> FrontCameraLinker;
 	CameraLinker<const char*> BackCameraLinker;
+	int PoseParts;
+	std::vector<std::vector<int>> PosePairs;
+	double ThreshHold;
 
 	Config(const char* glslVersion, const char* title, const ImVec2& windowSize, const ImVec2& frontCameraSize,
 		const ImVec2& backCameraSize, const cv::VideoCaptureAPIs& cameraApi, const char* protoTextPath,
 		const char* caffeModel, const DnnTargetMode& dnnMode, const CameraLinker<int>& frontCameraLinker,
-		const CameraLinker<const char*>& backCameraLinker) : GlslVersion(glslVersion), Title(title),
-		WindowSize(windowSize),	FrontCameraSize(frontCameraSize), BackCameraSize(backCameraSize), CameraApi(cameraApi),
+		const CameraLinker<const char*>& backCameraLinker, const int& poseParts,
+		std::vector<std::vector<int>> poseParis, const double& threshHold) : GlslVersion(glslVersion), Title(title),
+		WindowSize(windowSize), FrontCameraSize(frontCameraSize), BackCameraSize(backCameraSize), CameraApi(cameraApi),
 		ProtoTextPath(protoTextPath), CaffeModel(caffeModel), DnnMode(dnnMode), FrontCameraLinker(frontCameraLinker),
-		BackCameraLinker(backCameraLinker) { }
+		BackCameraLinker(backCameraLinker), PoseParts(poseParts), PosePairs(std::move(poseParis)),
+		ThreshHold(threshHold) { }
 };

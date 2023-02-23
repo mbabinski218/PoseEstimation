@@ -3,9 +3,12 @@
 // Methods
 Gui::Gui(const std::shared_ptr<Config>& config) : GuiConfig(config)
 {
+    Net = PoseEstimation::CreateDnnNet(config->ProtoTextPath, config->CaffeModel, config->DnnMode);
+
     FrontCamera = std::make_unique<Camera>(config->FrontCameraLinker, config->FrontCameraSize, config->CameraApi);
     BackCamera = std::make_unique<Camera>(config->BackCameraLinker, config->BackCameraSize, config->CameraApi);
-    PoseEstimator = std::make_unique<PoseEstimation>(config->ProtoTextPath, config->CaffeModel, config->DnnMode);
+    FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, config->FrontCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
+    BackCameraEstimator = std::make_unique<PoseEstimation>(Net, config->BackCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
 }
 
 // Before GUI render loop
@@ -18,8 +21,6 @@ void Gui::Init() const
 
     FrontCamera->SetUpdateCameraThread(FrontCameraUpdateThread);
     BackCamera->SetUpdateCameraThread(BackCameraUpdateThread);
-
-    PoseEstimator->Create(FrontCamera->GetMat());
 }
 
 // Inside GUI render loop
@@ -34,28 +35,28 @@ void Gui::Loop() const
 
     // Front camera window
 	ImGui::Begin("Front camera");
-    FrontCamera->UpdateImage();
     if (ShowPoseEstimation)
     {
-        PoseEstimator->Update(FrontCamera->GetMat());
-	    ImGui::Image(PoseEstimator->GetTexture(), GuiConfig->FrontCameraSize);
+        FrontCameraEstimator->Update(FrontCamera->GetMat());
+	    ImGui::Image(FrontCameraEstimator->GetTexture(), GuiConfig->FrontCameraSize);
     }
     else    
     {        
+		FrontCamera->UpdateImage(); 
 	    ImGui::Image(FrontCamera->GetTexture(), GuiConfig->FrontCameraSize);
     }
     ImGui::End();
 
 	// Back camera window
     ImGui::Begin("Back camera");
-    BackCamera->UpdateImage();
     if(ShowPoseEstimation)
     {
-        PoseEstimator->Update(BackCamera->GetMat());
-		ImGui::Image(PoseEstimator->GetTexture(), GuiConfig->BackCameraSize);
+        BackCameraEstimator->Update(BackCamera->GetMat());
+		ImGui::Image(BackCameraEstimator->GetTexture(), GuiConfig->BackCameraSize);
     }
     else
     {        
+		BackCamera->UpdateImage();
 		ImGui::Image(BackCamera->GetTexture(), GuiConfig->BackCameraSize);
     }
     ImGui::End();

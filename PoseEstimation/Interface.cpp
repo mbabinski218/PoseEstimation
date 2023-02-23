@@ -11,18 +11,26 @@ std::shared_ptr<Config> Setup()
 {
 	auto glslVersion       = "#version 430 core";
     auto title             = "Pose estimation";
+    auto dnnMode           = DnnTargetMode::Cpu;
+    auto protoTextPath     = R"(\models\pose\coco\pose_deploy_linevec.prototxt)";
+    auto caffeModel        = R"(\models\pose\coco\pose_iter_440000.caffemodel)";
     auto windowSize        = ImVec2(1920, 1080);
     auto frontCameraSize   = ImVec2(640, 480);
     auto backCameraSize    = ImVec2(640, 480);
     auto videoCaptureApi   = cv::CAP_ANY;
-    auto protoTextPath     = R"(\models\pose\coco\pose_deploy_linevec.prototxt)";
-    auto caffeModel        = R"(\models\pose\coco\pose_iter_440000.caffemodel)";
-    auto dnnMode           = DnnTargetMode::Cpu;
     auto frontCameraLinker = CameraLinker(0);
     auto backCameraLinker  = CameraLinker("http://192.168.1.108:4747/video");
+    auto threshHold        = 0.1;
+    auto poseParts         = 18;
+    auto posePairs         = std::vector<std::vector<int>>({{1,2}, {1,5}, {2,3},
+                                                              {3,4}, {5,6}, {6,7},
+                                                              {1,8}, {8,9}, {9,10},
+                                                              {1,11}, {11,12}, {12,13},
+                                                              {1,0}, {0,14},
+													          {14,16}, {0,15}, {15,17}});
 
-    return std::make_shared<Config>(glslVersion, title, windowSize, frontCameraSize, backCameraSize, 
-        videoCaptureApi, protoTextPath, caffeModel, dnnMode, frontCameraLinker, backCameraLinker);
+    return std::make_shared<Config>(glslVersion, title, windowSize, frontCameraSize, backCameraSize, videoCaptureApi, 
+        protoTextPath, caffeModel, dnnMode, frontCameraLinker, backCameraLinker, poseParts, posePairs, threshHold);
 }
 
 int main()

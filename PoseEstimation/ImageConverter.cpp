@@ -23,6 +23,7 @@ void ImageConverter::UpdateMat(const cv::Mat& frame)
 	{
 		Clear();
 		LoadCvMat(frame);
+		return;
 	}
 	
 	// image must have same size
