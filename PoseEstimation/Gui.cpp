@@ -31,7 +31,8 @@ void Gui::Loop() const
     // Debug window
 	ImGui::Text("%.1f FPS", static_cast<double>(ImGui::GetIO().Framerate));
     ImGui::Spacing();
-    ImGui::Checkbox("Show pose estimation", &ShowPoseEstimation);
+    ImGui::Checkbox("Pose estimation", &ShowPoseEstimation);
+    ImGui::Checkbox("3D model", &Show3dModel);
 
     // Front camera window
 	ImGui::Begin("Front camera");
@@ -58,6 +59,21 @@ void Gui::Loop() const
     {        
 		BackCamera->UpdateImage();
 		ImGui::Image(BackCamera->GetTexture(), GuiConfig->BackCameraSize);
+    }
+    ImGui::End();
+
+    // 3d model window
+    ImGui::Begin("3D model");
+    if(Show3dModel)
+    {
+	    if(!ShowPoseEstimation)
+	    {
+		    
+	    }
+        else
+        {
+	        
+        }
     }
     ImGui::End();
 }

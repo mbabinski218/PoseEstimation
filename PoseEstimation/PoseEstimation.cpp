@@ -1,5 +1,17 @@
 #include "PoseEstimation.hpp"
 
+#include <iostream>
+
+constexpr int POSE_PAIRS[17][2] =
+{
+    {1,2}, {1,5}, {2,3},
+    {3,4}, {5,6}, {6,7},
+    {1,8}, {8,9}, {9,10},
+    {1,11}, {11,12}, {12,13},
+    {1,0}, {0,14},
+    {14,16}, {0,15}, {15,17}
+};
+
 // Methods
 std::shared_ptr<cv::dnn::Net> PoseEstimation::CreateDnnNet(const std::string& protoTextPath, const std::string& caffeModel, const DnnTargetMode& dnnMode)
 {
@@ -34,7 +46,7 @@ PoseEstimation::PoseEstimation(std::shared_ptr<cv::dnn::Net> net, const ImVec2& 
 
 std::unique_ptr<cv::Mat> PoseEstimation::FindPose(const std::unique_ptr<cv::Mat>& mat) const
 {
-	const auto inputBlob = cv::dnn::blobFromImage(*mat, 1.0 / 255.0, Size, cv::Scalar(0, 0, 0));
+	const auto inputBlob = cv::dnn::blobFromImage(*mat, 1.0 / 255.0, cv::Size(299, 299), cv::Scalar(0, 0, 0));
 	Net->setInput(inputBlob);
     const auto outputBlob = Net->forward();
 
@@ -73,7 +85,7 @@ void PoseEstimation::AddPoseToImage(const std::unique_ptr<cv::Mat>& outputBlob, 
         cv::Point maxLoc;
         double prob;
 
-        minMaxLoc(probMap, nullptr, &prob, nullptr, &maxLoc);
+        minMaxLoc(probMap, 0, &prob, 0, &maxLoc);
 
         if (prob > ThreshHold)
         {
@@ -84,19 +96,17 @@ void PoseEstimation::AddPoseToImage(const std::unique_ptr<cv::Mat>& outputBlob, 
         points[n] = p;
     }
 
-    const auto nPairs = static_cast<int>(PosePairs.size() / PosePairs[0].size());
-
-    for (int n = 0; n < nPairs; n++)
+    for (const auto& posePair : PosePairs)
     {
         // lookup 2 connected body/hand parts
-        cv::Point2f partA = points[PosePairs[n][0]];
-        cv::Point2f partB = points[PosePairs[n][1]];
+        cv::Point2f partA = points[posePair[0]];
+        cv::Point2f partB = points[posePair[1]];
 
         if (partA.x <= 0 || partA.y <= 0 || partB.x <= 0 || partB.y <= 0)
             continue;
 
-        line(*mat, partA, partB, cv::Scalar(65, 115, 190), 6);
-        circle(*mat, partA, 8, cv::Scalar(220, 220, 220), 1);
-        circle(*mat, partB, 8, cv::Scalar(220, 220, 220), 1);
+        line(*mat, partA, partB, cv::Scalar(65, 115, 190), 5);
+        circle(*mat, partA, 4, cv::Scalar(220, 220, 220), 1);
+        circle(*mat, partB, 4, cv::Scalar(220, 220, 220), 1);
     }
 }
