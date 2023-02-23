@@ -146,9 +146,12 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="Interface.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="PoseEstimation.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Model.hpp" />
     <ClInclude Include="Config.hpp" />
     <ClInclude Include="Gui.hpp" />
     <ClInclude Include="ImageConverter.hpp" />
@@ -163,7 +166,9 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="Camera.hpp" />
     <ClInclude Include="KeyPoint.hpp" />
+    <ClInclude Include="ObjLoader.hpp" />
     <ClInclude Include="PoseEstimation.hpp" />
+    <ClInclude Include="Vertex.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
