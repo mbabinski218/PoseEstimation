@@ -1,6 +1,6 @@
 #include "ObjLoader.hpp"
 
-std::vector<Vertex> ObjLoader::LoadObj(const std::string& path)
+std::vector<Vertex> ObjLoader::Load(const std::string& path)
 {
 	// Vertex portions
 	std::vector<glm::fvec3> vertexPositions;

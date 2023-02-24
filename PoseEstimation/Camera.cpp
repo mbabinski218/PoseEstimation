@@ -27,7 +27,7 @@ bool Camera::OpenCamera() const
 	if (isOpened)
 	{
 		VideoCapture->read(*Frame);
-		Image->LoadCvMat(*Frame);
+		Image->LoadMat(*Frame);
 	}
 
 	return isOpened;

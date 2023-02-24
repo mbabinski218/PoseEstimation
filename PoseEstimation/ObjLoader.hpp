@@ -9,5 +9,5 @@
 class ObjLoader
 {
 public:
-	static std::vector<Vertex> LoadObj(const std::string& path);
+	static std::vector<Vertex> Load(const std::string& path);
 };

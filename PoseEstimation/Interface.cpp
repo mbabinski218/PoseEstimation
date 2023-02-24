@@ -31,7 +31,8 @@ std::shared_ptr<Config> Setup()
 													              {14,16}, {0,15}, {15,17}});
 
     return std::make_shared<Config>(glslVersion, title, windowSize, frontCameraSize, backCameraSize, videoCaptureApi, 
-        protoTextPath, caffeModelPath, dnnMode, frontCameraLinker, backCameraLinker, poseParts, posePairs, threshHold);
+        protoTextPath, caffeModelPath, dnnMode, frontCameraLinker, backCameraLinker, poseParts, posePairs, threshHold,
+        modelObjPath);
 }
 
 int main()

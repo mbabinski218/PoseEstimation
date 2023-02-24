@@ -26,6 +26,7 @@ struct Config
 	cv::VideoCaptureAPIs CameraApi;
 	std::string ProtoTextPath;
 	std::string CaffeModel;
+	std::string ModelObjPath;
 	DnnTargetMode DnnMode;
 	CameraLinker<int> FrontCameraLinker;
 	CameraLinker<const char*> BackCameraLinker;
@@ -37,9 +38,10 @@ struct Config
 		const ImVec2& backCameraSize, const cv::VideoCaptureAPIs& cameraApi, const char* protoTextPath,
 		const char* caffeModel, const DnnTargetMode& dnnMode, const CameraLinker<int>& frontCameraLinker,
 		const CameraLinker<const char*>& backCameraLinker, const int& poseParts,
-		std::vector<std::vector<int>> poseParis, const double& threshHold) : GlslVersion(glslVersion), Title(title),
-		WindowSize(windowSize), FrontCameraSize(frontCameraSize), BackCameraSize(backCameraSize), CameraApi(cameraApi),
-		ProtoTextPath(protoTextPath), CaffeModel(caffeModel), DnnMode(dnnMode), FrontCameraLinker(frontCameraLinker),
+		std::vector<std::vector<int>> poseParis, const double& threshHold, const char* modelObjPath) :
+		GlslVersion(glslVersion), Title(title),	WindowSize(windowSize), FrontCameraSize(frontCameraSize),
+		BackCameraSize(backCameraSize), CameraApi(cameraApi), ProtoTextPath(protoTextPath), CaffeModel(caffeModel),
+		ModelObjPath(modelObjPath), DnnMode(dnnMode), FrontCameraLinker(frontCameraLinker),
 		BackCameraLinker(backCameraLinker), PoseParts(poseParts), PosePairs(std::move(poseParis)),
 		ThreshHold(threshHold) { }
 };

@@ -9,6 +9,8 @@ Gui::Gui(const std::shared_ptr<Config>& config) : GuiConfig(config)
     BackCamera = std::make_unique<Camera>(config->BackCameraLinker, config->BackCameraSize, config->CameraApi);
     FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, config->FrontCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
     BackCameraEstimator = std::make_unique<PoseEstimation>(Net, config->BackCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
+
+    Model3d = std::make_unique<Model>(config->ModelObjPath, config->WindowSize);
 }
 
 // Before GUI render loop
@@ -63,19 +65,23 @@ void Gui::Loop() const
     ImGui::End();
 
     // 3d model window
-    ImGui::Begin("3D model");
     if(Show3dModel)
     {
+		ImGui::Begin("3D model");
+        const auto size = ImGui::GetWindowSize();
+
 	    if(!ShowPoseEstimation)
 	    {
-		    
+            Model3d->Update(size);
+            ImGui::Image(Model3d->GetTexture(), size);
 	    }
         else
         {
 	        
         }
+
+		ImGui::End();
     }
-    ImGui::End();
 }
 
 static void GlfwErrorCallback(int error, const char* description)

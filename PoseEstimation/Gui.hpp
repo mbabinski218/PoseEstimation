@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Model.hpp"
 #include "imgui_impl_opengl3.h"
 #include "PoseEstimation.hpp"
 #include "imgui_impl_glfw.h"
@@ -17,6 +18,7 @@ public:
 	std::unique_ptr<Camera> BackCamera;
 	std::unique_ptr<PoseEstimation> FrontCameraEstimator;
 	std::unique_ptr<PoseEstimation> BackCameraEstimator;
+	std::unique_ptr<Model> Model3d;
 
 	inline static std::unique_ptr<std::jthread> FrontCameraUpdateThread = std::make_unique<std::jthread>();
 	inline static std::unique_ptr<std::jthread> BackCameraUpdateThread = std::make_unique<std::jthread>();
