@@ -1,9 +1,12 @@
 #include "Model.hpp"
 
-Model::Model(const std::string& objFilePath, const ImVec2& windowSize) : Image(std::make_unique<ImageConverter>()),
+
+
+Model::Model(const std::string& modelObjPath, const ImVec2& windowSize) : Image(std::make_unique<ImageConverter>()),
 	WindowSize(windowSize), MatrixId(0)
 {
-	const auto vertices = ObjLoader::Load(objFilePath);
+	const auto currentPath = std::filesystem::current_path().string();
+	const auto vertices = ObjLoader::Load(currentPath + modelObjPath);
 	Vertices = std::make_unique<std::vector<Vertex>>(vertices);
 
 	Init();

@@ -48,7 +48,7 @@ std::vector<Vertex> ObjLoader::Load(const std::string& path)
 		}
 		else if (prefix == "f")
 		{
-			GLint temp;
+			GLint temp = 0;
 			int counter = 0;
 
 			while(ss >> temp)
@@ -81,9 +81,9 @@ std::vector<Vertex> ObjLoader::Load(const std::string& path)
 
 	for (size_t i = 0; i < vertices.size(); i++)
 	{
-		vertices[i].Position = vertexPositions[vertexPositionIndices[i]];
-		vertices[i].Texcoord = vertexTexcoords[vertexTexcoordIndices[i]];
-		vertices[i].Normal = vertexNormals[vertexNormalIndices[i]];
+		vertices[i].Position = vertexPositions[vertexPositionIndices[i] - 1];
+		vertices[i].Texcoord = vertexTexcoords[vertexTexcoordIndices[i] - 1];
+		vertices[i].Normal = vertexNormals[vertexNormalIndices[i] - 1];
 		vertices[i].Color = glm::vec3(1, 1, 1);
 	}
 
