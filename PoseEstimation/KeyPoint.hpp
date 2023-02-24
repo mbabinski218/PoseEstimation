@@ -8,7 +8,7 @@ struct KeyPoint
 	cv::Point Point;
 	float Probability;
 
-	KeyPoint(const cv::Point point, const float probability)
+	KeyPoint(const cv::Point& point, const float& probability)
 	{
 		Id = -1;
 		Point = point;

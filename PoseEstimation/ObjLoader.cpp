@@ -79,7 +79,7 @@ std::vector<Vertex> ObjLoader::LoadObj(const std::string& path)
 
 	vertices.resize(vertexPositionIndices.size(), Vertex());
 
-	for (int i = 0; i < vertices.size(); i++)
+	for (size_t i = 0; i < vertices.size(); i++)
 	{
 		vertices[i].Position = vertexPositions[vertexPositionIndices[i]];
 		vertices[i].Texcoord = vertexTexcoords[vertexTexcoordIndices[i]];

@@ -10,16 +10,14 @@ enum DnnTargetMode
 };
 
 template<typename T>
-class CameraLinker
+struct CameraLinker
 {
-public:
 	T Link;
 	explicit CameraLinker(T link) : Link(link) { }
 };
 
-class Config
+struct Config
 {
-public:
 	const char* GlslVersion;
 	const char* Title;
 	ImVec2 WindowSize;

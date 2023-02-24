@@ -1,5 +1,7 @@
 #include "ImageConverter.hpp"
 
+ImageConverter::ImageConverter() : Texture(0), Size(cv::Size(0, 0)) { }
+
 void ImageConverter::LoadCvMat(const cv::Mat& frame)
 {
 	if (frame.empty() || Texture != 0)
