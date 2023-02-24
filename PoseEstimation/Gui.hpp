@@ -28,6 +28,7 @@ public:
 	// Methods
 	explicit Gui(const std::shared_ptr<Config>& config);
 	void Render() const;
+
 private:
 	void Init() const;
 	void Loop() const;

@@ -14,7 +14,7 @@ std::shared_ptr<Config> Setup()
     auto dnnMode           = DnnTargetMode::Cpu;
     auto protoTextPath     = R"(\models\pose\coco\pose_deploy_linevec.prototxt)";
     auto caffeModelPath    = R"(\models\pose\coco\pose_iter_440000.caffemodel)";
-    auto modelObjPath      = R"()";
+    auto modelObjPath      = R"(\3dModels\Base.obj)";
     auto windowSize        = ImVec2(1920, 1080);
     auto frontCameraSize   = ImVec2(640, 480);
     auto backCameraSize    = ImVec2(640, 480);
