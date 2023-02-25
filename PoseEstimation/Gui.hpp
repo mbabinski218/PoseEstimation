@@ -24,6 +24,7 @@ public:
 	int FrameBufferWidth;
 	int FrameBufferHeight;
 
+	inline static ImVec4 BgColor = ImVec4(0.10f, 0.10f, 0.10f, 1.0f);
 	inline static std::unique_ptr<std::jthread> FrontCameraUpdateThread = std::make_unique<std::jthread>();
 	inline static std::unique_ptr<std::jthread> BackCameraUpdateThread = std::make_unique<std::jthread>();
 	inline static bool ShowPoseEstimation = false;
@@ -39,8 +40,8 @@ private:
 	void InitGlfw() const;
 	void InitWindow();
 	void InitGlew() const;
-	void InitOpenGLOptions() const;
-	void SetupCamera() const;
+	void InitOpenGL() const;
+	void InitCamera() const;
 
 	static void GlfwErrorCallback(int error, const char* description);
 	static void FrameBufferResizeCallback(GLFWwindow* window, int fbW, int fbH);

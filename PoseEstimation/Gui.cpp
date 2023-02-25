@@ -6,12 +6,13 @@ Gui::Gui(const std::shared_ptr<Config>& config) : Window(nullptr),	GuiConfig(con
     InitGlfw();
     InitWindow();
     InitGlew();
-    InitOpenGLOptions();
-
-    Net = PoseEstimation::CreateDnnNet(config->ProtoTextPath, config->CaffeModel, config->DnnMode);
+    InitOpenGL();    
 
     FrontCamera = std::make_unique<Camera>(config->FrontCameraLinker, config->FrontCameraSize, config->CameraApi);
     BackCamera = std::make_unique<Camera>(config->BackCameraLinker, config->BackCameraSize, config->CameraApi);
+    InitCamera();
+
+    Net = PoseEstimation::CreateDnnNet(config->ProtoTextPath, config->CaffeModel, config->DnnMode);
     FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, config->FrontCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
     BackCameraEstimator = std::make_unique<PoseEstimation>(Net, config->BackCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
 
@@ -74,28 +75,7 @@ void Gui::Loop() const
 
 void Gui::Render() const
 {
-    // Vsync
-    glfwSwapInterval(1);
-
-    // Setup ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-	(void)io;
-
-    // Setup ImGui style
-    ImGui::StyleColorsDark();
-
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(Window, true);
-    ImGui_ImplOpenGL3_Init(GuiConfig->GlslVersion);
-
-    constexpr auto clearColor = ImVec4(0.10f, 0.10f, 0.10f, 1.0f);
-
-    // Setup cameras
-    SetupCamera();
-
-    while (!glfwWindowShouldClose(Window))
+	while (!glfwWindowShouldClose(Window))
     {
         glfwPollEvents();
 
@@ -112,7 +92,7 @@ void Gui::Render() const
         int displayW, displayH;
         glfwGetFramebufferSize(Window, &displayW, &displayH);
         glViewport(0, 0, displayW, displayH);
-        glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
+        glClearColor(BgColor.x * BgColor.w, BgColor.y * BgColor.w, BgColor.z * BgColor.w, BgColor.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
@@ -129,6 +109,11 @@ void Gui::InitGlfw() const
 
 void Gui::InitWindow()
 {
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
+    glfwWindowHint(GLFW_RESIZABLE, false);
+
     Window = glfwCreateWindow(static_cast<int>(GuiConfig->WindowSize.x), 
         static_cast<int>(GuiConfig->WindowSize.y), GuiConfig->Title, nullptr, nullptr);
 
@@ -147,8 +132,24 @@ void Gui::InitGlew() const
         throw std::exception("GLEW init failed");
 }
 
-void Gui::InitOpenGLOptions() const
+void Gui::InitOpenGL() const
 {
+    // Vsync
+    glfwSwapInterval(true);
+
+    // Setup ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO();
+    (void)io;
+
+    // Setup ImGui style
+    ImGui::StyleColorsDark();
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplGlfw_InitForOpenGL(Window, true);
+    ImGui_ImplOpenGL3_Init(GuiConfig->GlslVersion);
+
     glEnable(GL_DEPTH_TEST);
 
     glEnable(GL_CULL_FACE);
@@ -159,12 +160,9 @@ void Gui::InitOpenGLOptions() const
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-    //Input
-    glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
-void Gui::SetupCamera() const
+void Gui::InitCamera() const
 {
     if (!FrontCamera->OpenCamera())
         throw std::exception("Front camera error");
