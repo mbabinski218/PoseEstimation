@@ -3,6 +3,8 @@
 // Methods
 Gui::Gui(const std::shared_ptr<Config>& config) : GuiConfig(config)
 {
+    InitGlfw();
+    Window = CreateWindow();
     Net = PoseEstimation::CreateDnnNet(config->ProtoTextPath, config->CaffeModel, config->DnnMode);
 
     FrontCamera = std::make_unique<Camera>(config->FrontCameraLinker, config->FrontCameraSize, config->CameraApi);
@@ -11,18 +13,6 @@ Gui::Gui(const std::shared_ptr<Config>& config) : GuiConfig(config)
     BackCameraEstimator = std::make_unique<PoseEstimation>(Net, config->BackCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
 
     Model3d = std::make_unique<Model>(config->ModelObjPath, config->WindowSize);
-}
-
-// Before GUI render loop
-void Gui::Init() const
-{
-    if (!FrontCamera->OpenCamera())
-        throw std::exception("Front camera error");
-    if (!BackCamera->OpenCamera())
-        throw std::exception("Back camera error");
-
-    FrontCamera->SetUpdateCameraThread(FrontCameraUpdateThread);
-    BackCamera->SetUpdateCameraThread(BackCameraUpdateThread);
 }
 
 // Inside GUI render loop
@@ -68,12 +58,12 @@ void Gui::Loop() const
     if(Show3dModel)
     {
 		ImGui::Begin("3D model");
-        const auto size = ImGui::GetWindowSize();
+        const auto windowDrawList = ImGui::GetWindowDrawList();
 
 	    if(!ShowPoseEstimation)
 	    {
-            Model3d->Update(size);
-            ImGui::Image(Model3d->GetTexture(), size);
+           // windowDrawList->AddImage(ImVec2(ImGui::GetCursorScreenPos()),
+           //     ImVec2(ImGui::GetCursorScreenPos().x + window.getWidth() / 2, ImGui::GetCursorScreenPos().y + window.getHeight() / 2), ImVec2(0, 1), ImVec2(1, 0))
 	    }
         else
         {
@@ -84,23 +74,9 @@ void Gui::Loop() const
     }
 }
 
-static void GlfwErrorCallback(int error, const char* description)
-{
-    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-}
-
 void Gui::Render() const
 {
-    glfwSetErrorCallback(GlfwErrorCallback);
-    if (!glfwInit())
-        throw std::exception("GLFW init failed");
-
-    // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(static_cast<int>(GuiConfig->WindowSize.x), 
-        static_cast<int>(GuiConfig->WindowSize.y), GuiConfig->Title, nullptr, nullptr);
-    if (window == nullptr)
-        throw std::exception("Gui window error");
-    glfwMakeContextCurrent(window);
+    glfwMakeContextCurrent(Window);
     glfwSwapInterval(1);
 
     // Setup ImGui context
@@ -113,15 +89,15 @@ void Gui::Render() const
     ImGui::StyleColorsDark();
 
     // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplGlfw_InitForOpenGL(Window, true);
     ImGui_ImplOpenGL3_Init(GuiConfig->GlslVersion);
 
     constexpr auto clearColor = ImVec4(0.10f, 0.10f, 0.10f, 1.0f);
 
-    // Init
-    Init();
+    // Setup cameras
+    SetupCamera();
 
-    while (!glfwWindowShouldClose(window))
+    while (!glfwWindowShouldClose(Window))
     {
         glfwPollEvents();
 
@@ -136,19 +112,55 @@ void Gui::Render() const
         // Rendering
         ImGui::Render();
         int displayW, displayH;
-        glfwGetFramebufferSize(window, &displayW, &displayH);
+        glfwGetFramebufferSize(Window, &displayW, &displayH);
         glViewport(0, 0, displayW, displayH);
         glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(Window);
     }
+}
 
-    // Cleanup
+GLFWwindow* Gui::CreateWindow() const
+{
+    GLFWwindow* window = glfwCreateWindow(static_cast<int>(GuiConfig->WindowSize.x),
+        static_cast<int>(GuiConfig->WindowSize.y), GuiConfig->Title, nullptr, nullptr);
+
+    if (window == nullptr)
+        throw std::exception("Gui window error");
+
+    return window;
+}
+
+static void GlfwErrorCallback(int error, const char* description)
+{
+    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+}
+
+void Gui::InitGlfw() const
+{
+    glfwSetErrorCallback(GlfwErrorCallback);
+    if (!glfwInit())
+        throw std::exception("GLFW init failed");
+}
+
+void Gui::SetupCamera() const
+{
+    if (!FrontCamera->OpenCamera())
+        throw std::exception("Front camera error");
+    if (!BackCamera->OpenCamera())
+        throw std::exception("Back camera error");
+
+    FrontCamera->SetUpdateCameraThread(FrontCameraUpdateThread);
+    BackCamera->SetUpdateCameraThread(BackCameraUpdateThread);
+}
+
+Gui::~Gui()
+{
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(Window);
     glfwTerminate();
 }

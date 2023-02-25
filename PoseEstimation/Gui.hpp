@@ -11,6 +11,7 @@ class Gui
 {
 public:
 	// Variables
+	GLFWwindow* Window;
 	std::shared_ptr<Config> GuiConfig;
 	std::shared_ptr<cv::dnn::Net> Net;
 
@@ -27,9 +28,12 @@ public:
 
 	// Methods
 	explicit Gui(const std::shared_ptr<Config>& config);
+	~Gui();
 	void Render() const;
 
 private:
-	void Init() const;
 	void Loop() const;
+	void InitGlfw() const;
+	void SetupCamera() const;
+	GLFWwindow* CreateWindow() const;
 };

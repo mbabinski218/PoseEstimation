@@ -39,13 +39,18 @@ void Camera::SetUpdateCameraThread(std::unique_ptr<std::jthread>& thread) const
 		while (true)
 		{
 			VideoCapture->read(*Frame);
-			cvtColor(*Frame, *Frame, cv::COLOR_BGR2RGB);
+			cvtColor(*Frame, *Frame, cv::COLOR_BGR2RGB);				
 		}
 	});
 }
 
+void Camera::Read() const
+{
+	VideoCapture->read(*Frame);
+}
+
 void Camera::UpdateImage() const
-{	
+{
 	Image->UpdateMat(*Frame);
 }
 
