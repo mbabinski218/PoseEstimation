@@ -1,13 +1,14 @@
 #include "ImageConverter.hpp"
 
-ImageConverter::ImageConverter() : Texture(0), Size(cv::Size(0, 0)) { }
+ImageConverter::ImageConverter() : Texture(0), Width(0), Height(0) { }
 
 void ImageConverter::LoadMat(const void* frameId, const int& width, const int& height)
 {
 	if (Texture != 0)
 		return;
 
-	Size = cv::Size(width, height);
+	Width = width;
+	Height = height;
 
 	glGenTextures(1, &Texture);
 	glBindTexture(GL_TEXTURE_2D, Texture);
@@ -18,24 +19,30 @@ void ImageConverter::LoadMat(const void* frameId, const int& width, const int& h
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, frameId);
 }
 
+void ImageConverter::UpdateMat(const void* frameId, const int& width, const int& height)
+{
+	// if does not have the same size then i need to recreate the texture from scratch
+	if (Width != width || Height != height)
+	{
+		Clear();
+		LoadMat(frameId, width, height);
+		return;
+	}
+
+	// image must have same size
+	glBindTexture(GL_TEXTURE_2D, Texture);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, frameId);
+}
+
 void ImageConverter::LoadMat(const cv::Mat& frame)
 {
 	LoadMat(frame.ptr(), frame.cols, frame.rows);
 }
 
+
 void ImageConverter::UpdateMat(const cv::Mat& frame)
 {
-	// if does not have the same size then i need to recreate the texture from scratch
-	if (frame.size() != Size)
-	{
-		Clear();
-		LoadMat(frame);
-		return;
-	}
-	
-	// image must have same size
-	glBindTexture(GL_TEXTURE_2D, Texture);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, frame.cols, frame.rows, GL_RGB, GL_UNSIGNED_BYTE, frame.ptr());
+	UpdateMat(frame.ptr(), frame.cols, frame.rows);
 }
 
 // clear texture and release all memory associated with it

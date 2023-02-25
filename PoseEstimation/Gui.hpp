@@ -21,6 +21,9 @@ public:
 	std::unique_ptr<PoseEstimation> BackCameraEstimator;
 	std::unique_ptr<Model> Model3d;
 
+	int FrameBufferWidth;
+	int FrameBufferHeight;
+
 	inline static std::unique_ptr<std::jthread> FrontCameraUpdateThread = std::make_unique<std::jthread>();
 	inline static std::unique_ptr<std::jthread> BackCameraUpdateThread = std::make_unique<std::jthread>();
 	inline static bool ShowPoseEstimation = false;
@@ -34,6 +37,11 @@ public:
 private:
 	void Loop() const;
 	void InitGlfw() const;
+	void InitWindow();
+	void InitGlew() const;
+	void InitOpenGLOptions() const;
 	void SetupCamera() const;
-	GLFWwindow* CreateWindow() const;
+
+	static void GlfwErrorCallback(int error, const char* description);
+	static void FrameBufferResizeCallback(GLFWwindow* window, int fbW, int fbH);
 };

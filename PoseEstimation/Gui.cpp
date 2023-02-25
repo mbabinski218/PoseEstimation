@@ -1,10 +1,13 @@
 #include "Gui.hpp"
 
 // Methods
-Gui::Gui(const std::shared_ptr<Config>& config) : GuiConfig(config)
+Gui::Gui(const std::shared_ptr<Config>& config) : Window(nullptr),	GuiConfig(config),	FrameBufferWidth(0), FrameBufferHeight(0)
 {
     InitGlfw();
-    Window = CreateWindow();
+    InitWindow();
+    InitGlew();
+    InitOpenGLOptions();
+
     Net = PoseEstimation::CreateDnnNet(config->ProtoTextPath, config->CaffeModel, config->DnnMode);
 
     FrontCamera = std::make_unique<Camera>(config->FrontCameraLinker, config->FrontCameraSize, config->CameraApi);
@@ -12,7 +15,7 @@ Gui::Gui(const std::shared_ptr<Config>& config) : GuiConfig(config)
     FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, config->FrontCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
     BackCameraEstimator = std::make_unique<PoseEstimation>(Net, config->BackCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
 
-    Model3d = std::make_unique<Model>(config->ModelObjPath, config->WindowSize);
+    Model3d = std::make_unique<Model>(config->ModelObjPath);
 }
 
 // Inside GUI render loop
@@ -58,17 +61,12 @@ void Gui::Loop() const
     if(Show3dModel)
     {
 		ImGui::Begin("3D model");
-        const auto windowDrawList = ImGui::GetWindowDrawList();
 
-	    if(!ShowPoseEstimation)
+	    if(ShowPoseEstimation)
 	    {
-           // windowDrawList->AddImage(ImVec2(ImGui::GetCursorScreenPos()),
-           //     ImVec2(ImGui::GetCursorScreenPos().x + window.getWidth() / 2, ImGui::GetCursorScreenPos().y + window.getHeight() / 2), ImVec2(0, 1), ImVec2(1, 0))
+            //Model3d->Update();
 	    }
-        else
-        {
-	        
-        }
+        ImGui::Image(Model3d->GetTexture(), ImGui::GetWindowSize());
 
 		ImGui::End();
     }
@@ -76,7 +74,7 @@ void Gui::Loop() const
 
 void Gui::Render() const
 {
-    glfwMakeContextCurrent(Window);
+    // Vsync
     glfwSwapInterval(1);
 
     // Setup ImGui context
@@ -122,27 +120,48 @@ void Gui::Render() const
     }
 }
 
-GLFWwindow* Gui::CreateWindow() const
-{
-    GLFWwindow* window = glfwCreateWindow(static_cast<int>(GuiConfig->WindowSize.x),
-        static_cast<int>(GuiConfig->WindowSize.y), GuiConfig->Title, nullptr, nullptr);
-
-    if (window == nullptr)
-        throw std::exception("Gui window error");
-
-    return window;
-}
-
-static void GlfwErrorCallback(int error, const char* description)
-{
-    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-}
-
 void Gui::InitGlfw() const
 {
     glfwSetErrorCallback(GlfwErrorCallback);
     if (!glfwInit())
         throw std::exception("GLFW init failed");
+}
+
+void Gui::InitWindow()
+{
+    Window = glfwCreateWindow(static_cast<int>(GuiConfig->WindowSize.x), 
+        static_cast<int>(GuiConfig->WindowSize.y), GuiConfig->Title, nullptr, nullptr);
+
+    if (Window == nullptr)
+        throw std::exception("Gui window init error");
+
+    glfwGetFramebufferSize(Window, &FrameBufferWidth, &FrameBufferHeight);
+    glfwSetFramebufferSizeCallback(Window, FrameBufferResizeCallback);
+    glfwMakeContextCurrent(Window);
+}
+
+void Gui::InitGlew() const
+{
+    glewExperimental = GL_TRUE;
+    if (glewInit() != GLEW_OK)
+        throw std::exception("GLEW init failed");
+}
+
+void Gui::InitOpenGLOptions() const
+{
+    glEnable(GL_DEPTH_TEST);
+
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glFrontFace(GL_CCW);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+    //Input
+    glfwSetInputMode(Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Gui::SetupCamera() const
@@ -163,4 +182,14 @@ Gui::~Gui()
     ImGui::DestroyContext();
     glfwDestroyWindow(Window);
     glfwTerminate();
+}
+
+void Gui::FrameBufferResizeCallback(GLFWwindow* window, int fbW, int fbH)
+{
+    glViewport(0, 0, fbW, fbH);
+};
+
+void Gui::GlfwErrorCallback(int error, const char* description)
+{
+    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
 }
