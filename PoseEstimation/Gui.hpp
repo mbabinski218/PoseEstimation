@@ -18,7 +18,6 @@ public:
 	std::unique_ptr<Camera> BackCamera;
 	std::unique_ptr<PoseEstimation> FrontCameraEstimator;
 	std::unique_ptr<PoseEstimation> BackCameraEstimator;
-	std::shared_ptr<Shader> ModelShader;
 	std::unique_ptr<Mesh> Model;
 
 	int FrameBufferWidth;

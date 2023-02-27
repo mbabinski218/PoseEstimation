@@ -1,7 +1,7 @@
 #include "Mesh.hpp"
 
-Mesh::Mesh(const std::string& modelObjPath, std::shared_ptr<Shader>& shader, const ImVec2& modelSize) :
-	ModelShader(shader),
+Mesh::Mesh(const std::string& modelObjPath, const char* vertexFilePath, const char* fragmentFilePath, const ImVec2& modelSize) :
+	ModelShader(std::make_unique<Shader>(vertexFilePath, fragmentFilePath)),
 	FBuffer(std::make_unique<FrameBuffer>(modelSize.x, modelSize.y)),
 	ModelMatrix(),
 	Position(glm::vec3(0.f)),
@@ -16,11 +16,6 @@ Mesh::Mesh(const std::string& modelObjPath, std::shared_ptr<Shader>& shader, con
 void* Mesh::GetTexture() const
 {
 	return FBuffer->GetTexture();
-}
-
-void Mesh::UpdateUniforms()
-{
-	ModelShader->SetMat4Fv(ModelMatrix, "ModelMatrix");
 }
 
 void Mesh::UpdateModelMatrix()
@@ -40,7 +35,7 @@ void Mesh::Update()
 
 	ModelShader->Bind();
 
-	UpdateUniforms();
+	ModelShader->SetMat4Fv(ModelMatrix, "ModelMatrix");
 
 	FBuffer->Bind();
 	VIBuffer->Bind();

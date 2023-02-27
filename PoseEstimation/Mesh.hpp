@@ -12,11 +12,12 @@
 class Mesh
 {
 	// Variables
-	std::shared_ptr<Shader>& ModelShader;
+	std::unique_ptr<Shader> ModelShader;
 	std::unique_ptr<FrameBuffer> FBuffer;
 	std::unique_ptr<VertexIndexBuffer> VIBuffer;
 
 	glm::mat4 ModelMatrix;
+
 	glm::vec3 Position;
 	glm::vec3 Origin;
 	glm::vec3 Rotation;
@@ -24,11 +25,10 @@ class Mesh
 
 	//Methods
 public:
-	explicit Mesh(const std::string& modelObjPath, std::shared_ptr<Shader>& shader, const ImVec2& modelSize);
+	explicit Mesh(const std::string& modelObjPath, const char* vertexFilePath, const char* fragmentFilePath, const ImVec2& modelSize);
 	void* GetTexture() const;
 	void Update();
 
 private:
 	void UpdateModelMatrix();
-	void UpdateUniforms();
 };

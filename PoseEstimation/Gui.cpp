@@ -15,8 +15,7 @@ Gui::Gui(const std::shared_ptr<Config>& config) : Window(nullptr),	GuiConfig(con
     FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, config->FrontCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
     BackCameraEstimator = std::make_unique<PoseEstimation>(Net, config->BackCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
 
-    ModelShader = std::make_shared<Shader>(config->VertexCorePath, config->FragmentCorePath);
-    Model = std::make_unique<Mesh>(config->ModelObjPath, ModelShader, config->ModelSize);
+    Model = std::make_unique<Mesh>(config->ModelObjPath, config->VertexCorePath, config->FragmentCorePath, config->ModelSize);
 
     InitCamera();
 }
@@ -65,12 +64,8 @@ void Gui::Loop() const
     {
 		ImGui::Begin("3D model");
 
-	    if(ShowPoseEstimation)
-	    {
-            
-	    }
         Model->Update();
-        ImGui::Image(Model->GetTexture(), ImGui::GetWindowSize());
+        ImGui::Image(Model->GetTexture(), GuiConfig->ModelSize);
 
 		ImGui::End();
     }
