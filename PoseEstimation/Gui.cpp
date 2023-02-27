@@ -10,13 +10,15 @@ Gui::Gui(const std::shared_ptr<Config>& config) : Window(nullptr),	GuiConfig(con
 
     FrontCamera = std::make_unique<Camera>(config->FrontCameraLinker, config->FrontCameraSize, config->CameraApi);
     BackCamera = std::make_unique<Camera>(config->BackCameraLinker, config->BackCameraSize, config->CameraApi);
-    InitCamera();
 
     Net = PoseEstimation::CreateDnnNet(config->ProtoTextPath, config->CaffeModel, config->DnnMode);
     FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, config->FrontCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
     BackCameraEstimator = std::make_unique<PoseEstimation>(Net, config->BackCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
 
-    Model3d = std::make_unique<Model>(config->ModelObjPath);
+    ModelShader = std::make_shared<Shader>(config->VertexCorePath, config->FragmentCorePath);
+    Model = std::make_unique<Mesh>(config->ModelObjPath, ModelShader, config->ModelSize);
+
+    InitCamera();
 }
 
 // Inside GUI render loop
@@ -65,9 +67,10 @@ void Gui::Loop() const
 
 	    if(ShowPoseEstimation)
 	    {
-            //Model3d->Update();
+            
 	    }
-        ImGui::Image(Model3d->GetTexture(), ImGui::GetWindowSize());
+        Model->Update();
+        ImGui::Image(Model->GetTexture(), ImGui::GetWindowSize());
 
 		ImGui::End();
     }

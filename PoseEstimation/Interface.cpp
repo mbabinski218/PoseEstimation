@@ -15,7 +15,10 @@ std::shared_ptr<Config> Setup()
     auto protoTextPath     = R"(\models\pose\coco\pose_deploy_linevec.prototxt)";
     auto caffeModelPath    = R"(\models\pose\coco\pose_iter_440000.caffemodel)";
     auto modelObjPath      = R"(\3dModels\Base.obj)";
+    auto vertexCorePath    = R"(\shaders\vertex_core.glsl)";
+    auto fragmentCorePath  = R"(\shaders\fragment_core.glsl)";
     auto windowSize        = ImVec2(1920, 1080);
+    auto modelSize         = ImVec2(800, 800);
     auto frontCameraSize   = ImVec2(640, 480);
     auto backCameraSize    = ImVec2(640, 480);
     auto videoCaptureApi   = cv::CAP_ANY;
@@ -32,7 +35,7 @@ std::shared_ptr<Config> Setup()
 
     return std::make_shared<Config>(glslVersion, title, windowSize, frontCameraSize, backCameraSize, videoCaptureApi, 
         protoTextPath, caffeModelPath, dnnMode, frontCameraLinker, backCameraLinker, poseParts, posePairs, threshHold,
-        modelObjPath);
+        modelObjPath, vertexCorePath, fragmentCorePath, modelSize);
 }
 
 int main()

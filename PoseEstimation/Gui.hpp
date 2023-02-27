@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Model.hpp"
+#include "Mesh.hpp"
 #include "imgui_impl_opengl3.h"
 #include "PoseEstimation.hpp"
 #include "imgui_impl_glfw.h"
@@ -14,12 +14,12 @@ public:
 	GLFWwindow* Window;
 	std::shared_ptr<Config> GuiConfig;
 	std::shared_ptr<cv::dnn::Net> Net;
-
 	std::unique_ptr<Camera> FrontCamera;
 	std::unique_ptr<Camera> BackCamera;
 	std::unique_ptr<PoseEstimation> FrontCameraEstimator;
 	std::unique_ptr<PoseEstimation> BackCameraEstimator;
-	std::unique_ptr<Model> Model3d;
+	std::shared_ptr<Shader> ModelShader;
+	std::unique_ptr<Mesh> Model;
 
 	int FrameBufferWidth;
 	int FrameBufferHeight;

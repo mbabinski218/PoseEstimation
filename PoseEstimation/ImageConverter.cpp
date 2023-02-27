@@ -39,7 +39,6 @@ void ImageConverter::LoadMat(const cv::Mat& frame)
 	LoadMat(frame.ptr(), frame.cols, frame.rows);
 }
 
-
 void ImageConverter::UpdateMat(const cv::Mat& frame)
 {
 	UpdateMat(frame.ptr(), frame.cols, frame.rows);

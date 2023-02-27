@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Gui.cpp" />
     <ClCompile Include="ImageConverter.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
@@ -146,12 +147,15 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="Interface.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="PoseEstimation.cpp" />
+    <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="VertexIndexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Model.hpp" />
+    <ClInclude Include="FrameBuffer.hpp" />
+    <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="Config.hpp" />
     <ClInclude Include="Gui.hpp" />
     <ClInclude Include="ImageConverter.hpp" />
@@ -168,7 +172,9 @@
     <ClInclude Include="KeyPoint.hpp" />
     <ClInclude Include="ObjLoader.hpp" />
     <ClInclude Include="PoseEstimation.hpp" />
+    <ClInclude Include="Shader.hpp" />
     <ClInclude Include="Vertex.hpp" />
+    <ClInclude Include="VertexIndexBuffer.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
