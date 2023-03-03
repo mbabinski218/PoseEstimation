@@ -1,91 +1,78 @@
 #include "ObjLoader.hpp"
 
-std::vector<Vertex> ObjLoader::Load(const std::string& path)
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tinyobjloader/tiny_obj_loader.h"
+
+void ObjLoader::Load(const std::string& path, std::vector<Vertex>& vertices, std::vector<GLuint>& indices)
 {
-	// Vertex portions
-	std::vector<glm::fvec3> vertexPositions;
-	std::vector<glm::fvec2> vertexTexcoords;
-	std::vector<glm::fvec3> vertexNormals;
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string warn, err;
 
-	// Face vectors
-	std::vector<GLint> vertexPositionIndices;
-	std::vector<GLint> vertexTexcoordIndices;
-	std::vector<GLint> vertexNormalIndices;
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str()))
+        throw std::exception((warn + err).c_str());
 
-	std::vector<Vertex> vertices;
-	std::ifstream file(path);
-	std::stringstream ss;
-	std::string line;
+    vertices.clear();
+    indices.clear();
 
-	if (!file)
-		throw std::exception("Obj file error");
+    std::unordered_map<Vertex, uint32_t> uniqueVertices;
+    for (const auto& shape : shapes)
+    {
+        for (const auto& index : shape.mesh.indices)
+        {
+            Vertex vertex{};
 
-	while(std::getline(file, line))
-	{
-		ss.clear();
-		ss.str(line);
+            if (index.vertex_index >= 0)
+            {
+                vertex.Position =
+                {
+                    attrib.vertices[3 * index.vertex_index + 0],
+                    attrib.vertices[3 * index.vertex_index + 1],
+                    attrib.vertices[3 * index.vertex_index + 2],
+                };
 
-		std::string prefix;
-		ss >> prefix;
+                auto colorIndex = 3 * index.vertex_index + 2;
+                if (colorIndex < attrib.colors.size())
+                {
+                    vertex.Color =
+                    {
+                        attrib.colors[colorIndex - 2],
+                        attrib.colors[colorIndex - 1],
+                        attrib.colors[colorIndex - 0],
+                    };
+                }
+                else
+                {
+                    vertex.Color = { 200.f, 200.f, 200.f }; // default color
+                }
+            }
 
-		if (prefix == "v")
-		{
-			glm::fvec3 temp;
-			ss >> temp.x >> temp.y >> temp.z;
-			vertexPositions.push_back(temp);
-		}
-		else if (prefix == "vt")
-		{
-			glm::fvec2 temp;
-			ss >> temp.x >> temp.y;
-			vertexTexcoords.push_back(temp);
-		}
-		else if (prefix == "vn")
-		{
-			glm::fvec3 temp;
-			ss >> temp.x >> temp.y >> temp.z;
-			vertexNormals.push_back(temp);
-		}
-		else if (prefix == "f")
-		{
-			GLint temp = 0;
-			int counter = 0;
+            if (index.normal_index >= 0)
+            {
+                vertex.Normal =
+                {
+                    attrib.normals[3 * index.normal_index + 0],
+                    attrib.normals[3 * index.normal_index + 1],
+                    attrib.normals[3 * index.normal_index + 2],
+                };
+            }
 
-			while(ss >> temp)
-			{
-				if (counter == 0)
-					vertexPositionIndices.push_back(temp);
-				else if (counter == 1)
-					vertexTexcoordIndices.push_back(temp);
-				else if (counter == 2)
-					vertexNormalIndices.push_back(temp);
+            if (index.texcoord_index >= 0)
+            {
+                vertex.Texcoord =
+                {
+                    attrib.texcoords[2 * index.texcoord_index + 0],
+                    attrib.texcoords[2 * index.texcoord_index + 1],
+                };
+            }
 
-				if(ss.peek() == '/')
-				{
-					counter++;
-					ss.ignore(1, '/');
-				}
-				else if(ss.peek() == ' ')
-				{
-					counter++;
-					ss.ignore(1, ' ');
-				}
-
-				if (counter > 2)
-					counter = 0;
-			}
-		}
-	}
-
-	vertices.resize(vertexPositionIndices.size(), Vertex());
-
-	for (size_t i = 0; i < vertices.size(); i++)
-	{
-		vertices[i].Position = vertexPositions[vertexPositionIndices[i] - 1];
-		vertices[i].Texcoord = vertexTexcoords[vertexTexcoordIndices[i] - 1];
-		vertices[i].Normal = vertexNormals[vertexNormalIndices[i] - 1];
-		vertices[i].Color = glm::vec3(1, 1, 1);
-	}
-
-	return vertices;
+            if (!uniqueVertices.contains(vertex))
+            {
+                uniqueVertices[vertex] = static_cast<GLuint>(vertices.size());
+                vertices.push_back(vertex);
+            }
+            indices.push_back(uniqueVertices[vertex]);
+        }
+    }
 }

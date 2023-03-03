@@ -1,13 +1,9 @@
 #pragma once
-
-#include "glew/glew.h"
+#include "Libs.hpp"
 #include "Vertex.hpp"
-#include <fstream>
-#include <sstream>
-#include <vector>
 
 class ObjLoader
 {
 public:
-	static std::vector<Vertex> Load(const std::string& path);
+	static void Load(const std::string& path, std::vector<Vertex>& vertices, std::vector<GLuint>& indices);
 };

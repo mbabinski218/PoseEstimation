@@ -4,6 +4,7 @@
 #include "FrameBuffer.hpp"
 #include "Shader.hpp"
 #include "VertexIndexBuffer.hpp"
+#include "ObjLoader.hpp"
 
 class Mesh
 {
@@ -15,22 +16,16 @@ class Mesh
 	std::vector<Vertex> Vertices;
 	std::vector<GLuint> Indices;
 
-	glm::mat4 ModelMatrix;
+	glm::mat4 ViewMatrix;
 
-	glm::vec3 Position;
-	glm::vec3 Origin;
-	glm::vec3 Rotation;
-	glm::vec3 Scale;
 	
 	//Methods
 public:
 	explicit Mesh(const std::string& modelObjPath, const char* vertexFilePath, const char* fragmentFilePath, const ImVec2& modelSize);
 	void* GetTexture() const;
-	void Update();
 	void Render() const;
-
-	void Test(GLFWwindow* window);
+	void Update();
 
 private:
-	void UpdateModelMatrix();
+	void UpdateViewMatrix();
 };
