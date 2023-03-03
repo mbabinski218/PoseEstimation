@@ -17,18 +17,28 @@ class Mesh
 	std::vector<GLuint> Indices;
 
 	glm::mat4 ViewMatrix;
+	glm::vec3 Forward;
+	float Aspect, Near, Far;
+
+public:
 	glm::vec3 Focus;
 	glm::vec3 Position;
-	float Fov, Aspect, Near, Far;
-	float Pitch, Yaw, Roll;
+	float Fov;
+	int Pitch, Yaw, Roll;
 	float Distance;
 	
 	//Methods
-public:
 	explicit Mesh(const std::string& modelObjPath, const char* vertexFilePath, const char* fragmentFilePath);
 	void* GetTexture() const;
 	void Render() const;
 	void Update();
+	void ResetFov();
+	void ResetPitch();
+	void ResetYaw();
+	void ResetRoll();
+	void ResetDistance();
+	void ResetFocus();
+	void ResetAll();
 
 private:
 	void UpdateViewMatrix();

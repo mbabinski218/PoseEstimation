@@ -79,7 +79,17 @@ void Gui::Loop() const
     {
         ImGui::Begin("3D model controls");
 
-		
+        ImGui::SliderFloat("Fov", &Model->Fov, 10.0f, 200.0f);
+        ImGui::SliderInt("Pitch", &Model->Pitch, -180, 180);
+        ImGui::SliderInt("Yaw", &Model->Yaw, -180, 180);
+        ImGui::SliderInt("Roll", &Model->Roll, -180, 180);
+        ImGui::SliderFloat("Distance", &Model->Distance, 0.0f, 30.0f);
+        ImGui::SliderFloat3("Focus", reinterpret_cast<float*>(&Model->Focus), -5.0f, 5.0f);
+
+
+        ImGui::Spacing();
+        if (ImGui::Button("Reset"))
+            Model->ResetAll();
 
         ImGui::End();
     }
@@ -154,11 +164,14 @@ void Gui::InitOpenGL() const
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
 
+    // Setup ImGui font
     const auto path = std::filesystem::current_path().string() + GuiConfig->FontPath;
     io.FontDefault = io.Fonts->AddFontFromFileTTF(path.c_str(), 14.0f);
 
     // Setup ImGui style
     ImGui::StyleColorsDark();
+    ImGui::GetStyle().WindowBorderSize = 0.0f;
+    ImGui::GetStyle().FrameRounding = 5.0f;
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(Window, true);

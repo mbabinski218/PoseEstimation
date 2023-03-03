@@ -4,12 +4,12 @@ Mesh::Mesh(const std::string& modelObjPath, const char* vertexFilePath, const ch
 	ModelShader(std::make_unique<Shader>(vertexFilePath, fragmentFilePath)),
 	FBuffer(std::make_unique<FrameBuffer>(1280, 720)),
 	ViewMatrix(glm::mat4(0.f)),
-	Focus(glm::vec3( 0.0f, 0.0f, 0.0f )),
-	Position(glm::vec3( 0.0f, 0.0f, 0.0f )),
-	Fov(45.0f), Aspect(1.3f), Near(0.1f), Far(100.0f),
-	Pitch(0.0f), Yaw(0.0f), Roll(0.0f),
-	Distance(5.0f)
+	Forward(glm::vec3(0.0f, 0.0f, -0.5f)),
+	Aspect(1.3f), Near(0.1f), Far(100.0f),
+	Focus(glm::vec3(0.0f, 0.0f, 0.0f))
 {
+	ResetAll();
+
 	const auto path = std::filesystem::current_path().string() + modelObjPath;
     ObjLoader::Load(path, Vertices, Indices);
     
@@ -36,16 +36,19 @@ void Mesh::Render() const
 
 glm::quat Mesh::GetDirection() const
 {
+	const auto pitchInRadians = Pitch * glm::pi<float>() / 180.0f;
+	const auto yawInRadians = Yaw * glm::pi<float>() / 180.0f;
+	const auto rollInRadians = Roll * glm::pi<float>() / 180.0f;
+
 	return glm::quat
 	{
-		glm::vec3{-Pitch, -Yaw, Roll}
+		glm::vec3{-pitchInRadians, -yawInRadians, rollInRadians}
 	};
 }
 
 glm::vec3 Mesh::GetForward() const
 {
-    glm::vec3 cForward = { 0.0f, 0.0f, -1.0f };
-    return glm::rotate(GetDirection(),  cForward);
+    return glm::rotate(GetDirection(), Forward);
 }
 
 void Mesh::UpdateViewMatrix()
@@ -77,4 +80,21 @@ void Mesh::Update()
 	//ModelShader->SetF1(1.0f, "ao");
 
     ModelShader->Unbind();
+}
+
+void Mesh::ResetFov() { Fov = 45.0f; }
+void Mesh::ResetPitch() { Pitch = 0; }
+void Mesh::ResetYaw() { Yaw = 0; }
+void Mesh::ResetRoll() { Roll = 0; }
+void Mesh::ResetDistance() { Distance = 5.0f; }
+void Mesh::ResetFocus() { Focus = { 0.0f, 0.0f, 0.0f }; }
+
+void Mesh::ResetAll()
+{
+	ResetFov();
+	ResetDistance();
+	ResetPitch();
+	ResetYaw();
+	ResetRoll();
+	ResetFocus();
 }
