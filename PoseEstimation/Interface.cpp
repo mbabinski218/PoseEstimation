@@ -12,8 +12,8 @@ std::shared_ptr<Config> Setup()
     auto modelObjPath      = R"(\3dModels\Man.obj)";
     auto vertexCorePath    = R"(\shaders\vertex_core.glsl)";
     auto fragmentCorePath  = R"(\shaders\fragment_core.glsl)";
+	auto fontPath          = R"(\fonts\CascadiaMono.ttf)";
     auto windowSize        = ImVec2(1920, 1080);
-    auto modelSize         = ImVec2(800, 800);
     auto frontCameraSize   = ImVec2(640, 480);
     auto backCameraSize    = ImVec2(640, 480);
     auto videoCaptureApi   = cv::CAP_ANY;
@@ -30,7 +30,7 @@ std::shared_ptr<Config> Setup()
 
     return std::make_shared<Config>(glslVersion, title, windowSize, frontCameraSize, backCameraSize, videoCaptureApi, 
         protoTextPath, caffeModelPath, dnnMode, frontCameraLinker, backCameraLinker, poseParts, posePairs, threshHold,
-        modelObjPath, vertexCorePath, fragmentCorePath, modelSize);
+        modelObjPath, vertexCorePath, fragmentCorePath, fontPath);
 }
 
 int main()

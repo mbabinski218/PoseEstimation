@@ -27,6 +27,7 @@ public:
 	inline static std::unique_ptr<std::jthread> BackCameraUpdateThread = std::make_unique<std::jthread>();
 	inline static bool ShowPoseEstimation = false;
 	inline static bool Show3dModel = true;
+	inline static bool Show3dModelControls = true;
 
 	// Methods
 	explicit Gui(const std::shared_ptr<Config>& config);

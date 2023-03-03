@@ -1,9 +1,14 @@
 #include "Mesh.hpp"
 
-Mesh::Mesh(const std::string& modelObjPath, const char* vertexFilePath, const char* fragmentFilePath, const ImVec2& modelSize) :
+Mesh::Mesh(const std::string& modelObjPath, const char* vertexFilePath, const char* fragmentFilePath) :
 	ModelShader(std::make_unique<Shader>(vertexFilePath, fragmentFilePath)),
-	FBuffer(std::make_unique<FrameBuffer>(modelSize.x, modelSize.y)),
-	ViewMatrix(glm::mat4(0.f))
+	FBuffer(std::make_unique<FrameBuffer>(1280, 720)),
+	ViewMatrix(glm::mat4(0.f)),
+	Focus(glm::vec3( 0.0f, 0.0f, 0.0f )),
+	Position(glm::vec3( 0.0f, 0.0f, 0.0f )),
+	Fov(45.0f), Aspect(1.3f), Near(0.1f), Far(100.0f),
+	Pitch(0.0f), Yaw(0.0f), Roll(0.0f),
+	Distance(5.0f)
 {
 	const auto path = std::filesystem::current_path().string() + modelObjPath;
     ObjLoader::Load(path, Vertices, Indices);
@@ -29,26 +34,26 @@ void Mesh::Render() const
 	FBuffer->Unbind();
 }
 
-glm::quat get_direction()
+glm::quat Mesh::GetDirection() const
 {
-    float mPitch = 0.0f;
-    float mYaw = 0.0f;
-    return glm::quat(glm::vec3(-mPitch, -mYaw, 0.0f));
+	return glm::quat
+	{
+		glm::vec3{-Pitch, -Yaw, Roll}
+	};
 }
 
-glm::vec3 get_forward()
+glm::vec3 Mesh::GetForward() const
 {
     glm::vec3 cForward = { 0.0f, 0.0f, -1.0f };
-    return glm::rotate(get_direction(),  cForward);
+    return glm::rotate(GetDirection(),  cForward);
 }
 
 void Mesh::UpdateViewMatrix()
 {
-    glm::vec3 mFocus = { 0.0f, 0.0f, 0.0f };
-    glm::vec3(0, 0, 3) = mFocus - get_forward() * 5.0f;
+    Position = Focus - GetForward() * Distance;
+    const glm::quat orientation = GetDirection();
 
-    glm::quat orientation = get_direction();
-    ViewMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 3)) * glm::toMat4(orientation);
+    ViewMatrix = glm::translate(glm::mat4(1.0f), Position) * glm::toMat4(orientation);
     ViewMatrix = glm::inverse(ViewMatrix);
 }
 
@@ -58,10 +63,9 @@ void Mesh::Update()
 
     UpdateViewMatrix();
 
-    glm::mat4 model{ 1.0f };
-    ModelShader->SetMat4(model, "model");
+    ModelShader->SetMat4(glm::mat4(1.0f), "model");
     ModelShader->SetMat4(ViewMatrix, "view");
-    ModelShader->SetMat4(glm::perspective(45.0f, 1.3f, 0.1f, 100.0f), "projection");
+    ModelShader->SetMat4(glm::perspective(Fov, Aspect, Near, Far), "projection");
     ModelShader->SetVec3(glm::vec3(0, 0, 3), "camPos");
 
 	//ModelShader->SetVec3(glm::vec3( 1.5f, 3.5f, 3.0f ), "lightPosition");

@@ -35,14 +35,14 @@ struct Config
 	double ThreshHold;
 	const char* VertexCorePath;
 	const char* FragmentCorePath;
-	ImVec2 ModelSize;
+	std::string FontPath;
 
 	Config(const char* glslVersion, const char* title, const ImVec2& windowSize, const ImVec2& frontCameraSize,
 		const ImVec2& backCameraSize, const cv::VideoCaptureAPIs& cameraApi, const char* protoTextPath,
 		const char* caffeModel, const DnnTargetMode& dnnMode, const CameraLinker<int>& frontCameraLinker,
 		const CameraLinker<const char*>& backCameraLinker, const int& poseParts, std::vector<std::vector<int>> poseParis, 
 		const double& threshHold, const char* modelObjPath, const char* vertexCorePath, const char* fragmentCorePath,
-		const ImVec2& modelSize) :
+		const std::string& fontPath) :
 		GlslVersion(glslVersion),
 		Title(title),
 		WindowSize(windowSize),
@@ -56,5 +56,5 @@ struct Config
 		ThreshHold(threshHold),
 		VertexCorePath(vertexCorePath),
 		FragmentCorePath(fragmentCorePath),
-		ModelSize(modelSize) { }
+		FontPath(fontPath) { }
 };

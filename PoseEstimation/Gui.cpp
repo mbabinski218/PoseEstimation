@@ -15,7 +15,7 @@ Gui::Gui(const std::shared_ptr<Config>& config) : Window(nullptr),	GuiConfig(con
     FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, config->FrontCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
     BackCameraEstimator = std::make_unique<PoseEstimation>(Net, config->BackCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
 
-    Model = std::make_unique<Mesh>(config->ModelObjPath, config->VertexCorePath, config->FragmentCorePath, config->ModelSize);
+    Model = std::make_unique<Mesh>(config->ModelObjPath, config->VertexCorePath, config->FragmentCorePath);
 
     InitCamera();
 }
@@ -30,6 +30,7 @@ void Gui::Loop() const
     ImGui::Spacing();
     ImGui::Checkbox("Pose estimation", &ShowPoseEstimation);
     ImGui::Checkbox("3D model", &Show3dModel);
+    ImGui::Checkbox("3D model controls", &Show3dModelControls);
 
     // Front camera window
 	ImGui::Begin("Front camera");
@@ -66,8 +67,21 @@ void Gui::Loop() const
         Model->Render();
 
 		ImGui::Begin("3D model");
-        ImGui::Image(Model->GetTexture(), GuiConfig->ModelSize);
+
+        const auto windowSize = ImGui::GetWindowSize();
+        ImGui::Image(Model->GetTexture(), ImVec2(windowSize.x - 17, windowSize.y - 35));
+
 		ImGui::End();
+    }
+
+    // 3d model controls window
+    if (Show3dModelControls)
+    {
+        ImGui::Begin("3D model controls");
+
+		
+
+        ImGui::End();
     }
 }
 
@@ -139,7 +153,9 @@ void Gui::InitOpenGL() const
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    (void)io;
+
+    const auto path = std::filesystem::current_path().string() + GuiConfig->FontPath;
+    io.FontDefault = io.Fonts->AddFontFromFileTTF(path.c_str(), 14.0f);
 
     // Setup ImGui style
     ImGui::StyleColorsDark();
