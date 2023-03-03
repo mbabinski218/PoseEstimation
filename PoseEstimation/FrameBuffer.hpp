@@ -1,7 +1,5 @@
 #pragma once
-
-#include "glew/glew.h"
-#include <GLFW/glfw3.h>
+#include "Libs.hpp"
 
 class FrameBuffer
 {
@@ -15,6 +13,7 @@ class FrameBuffer
 	// Methods
 public:
     FrameBuffer(const int& width, const int& height);
+    ~FrameBuffer();
     void Bind() const;
 	void Unbind() const;
     void Clear();

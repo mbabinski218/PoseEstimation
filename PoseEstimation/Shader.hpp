@@ -1,15 +1,9 @@
 #pragma once
-
-#include "glew/glew.h"
-#include "glm/gtc/type_ptr.hpp"
-#include "glm/fwd.hpp"
-#include <filesystem>
-#include <exception>
-#include <fstream>
-#include <string>
+#include "Libs.hpp"
 
 class Shader
 {
+public:
 	// Variables
 	GLuint Id;
 	const int VersionMajor;
@@ -21,7 +15,10 @@ public:
 	Shader(const char* vertexFilePath, const char* fragmentFilePath);
 	void Bind() const;
 	void Unbind() const;
-	void SetMat4Fv(glm::mat4& value, const GLchar* name) const;
+
+	void SetVec3(const glm::vec3& vec3, const std::string& name) const;
+	void SetMat4(const glm::mat4& mat4, const std::string& name) const;
+	void SetF1(const float& v, const std::string& name) const;
 
 private:
 	std::string LoadShaderSource(const char* filePath) const;

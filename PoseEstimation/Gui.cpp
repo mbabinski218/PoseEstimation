@@ -9,7 +9,7 @@ Gui::Gui(const std::shared_ptr<Config>& config) : Window(nullptr),	GuiConfig(con
     InitOpenGL();    
 
     FrontCamera = std::make_unique<Camera>(config->FrontCameraLinker, config->FrontCameraSize, config->CameraApi);
-    BackCamera = std::make_unique<Camera>(config->BackCameraLinker, config->BackCameraSize, config->CameraApi);
+    //BackCamera = std::make_unique<Camera>(config->BackCameraLinker, config->BackCameraSize, config->CameraApi);
 
     Net = PoseEstimation::CreateDnnNet(config->ProtoTextPath, config->CaffeModel, config->DnnMode);
     FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, config->FrontCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
@@ -46,27 +46,27 @@ void Gui::Loop() const
     ImGui::End();
 
 	// Back camera window
-    ImGui::Begin("Back camera");
-    if(ShowPoseEstimation)
-    {
-        BackCameraEstimator->Update(BackCamera->GetMat());
-		ImGui::Image(BackCameraEstimator->GetTexture(), GuiConfig->BackCameraSize);
-    }
-    else
-    {        
-		BackCamera->UpdateImage();
-		ImGui::Image(BackCamera->GetTexture(), GuiConfig->BackCameraSize);
-    }
-    ImGui::End();
+  //  ImGui::Begin("Back camera");
+  //  if(ShowPoseEstimation)
+  //  {
+  //      BackCameraEstimator->Update(BackCamera->GetMat());
+		//ImGui::Image(BackCameraEstimator->GetTexture(), GuiConfig->BackCameraSize);
+  //  }
+  //  else
+  //  {        
+		//BackCamera->UpdateImage();
+		//ImGui::Image(BackCamera->GetTexture(), GuiConfig->BackCameraSize);
+  //  }
+  //  ImGui::End();
 
     // 3d model window
-    if(Show3dModel)
+    if (Show3dModel)
     {
-		ImGui::Begin("3D model");
-
         Model->Update();
-        ImGui::Image(Model->GetTexture(), GuiConfig->ModelSize);
+        Model->Render();
 
+		ImGui::Begin("3D model");
+        ImGui::Image(Model->GetTexture(), GuiConfig->ModelSize);
 		ImGui::End();
     }
 }
@@ -148,6 +148,7 @@ void Gui::InitOpenGL() const
     ImGui_ImplGlfw_InitForOpenGL(Window, true);
     ImGui_ImplOpenGL3_Init(GuiConfig->GlslVersion);
 
+    glEnable(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);
 
     glEnable(GL_CULL_FACE);
@@ -156,6 +157,8 @@ void Gui::InitOpenGL() const
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    //glEnable(GL_DEBUG_OUTPUT);
+    //glDebugMessageCallback(GlMessageCallback, nullptr);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
@@ -164,11 +167,11 @@ void Gui::InitCamera() const
 {
     if (!FrontCamera->OpenCamera())
         throw std::exception("Front camera error");
-    if (!BackCamera->OpenCamera())
-        throw std::exception("Back camera error");
+    //if (!BackCamera->OpenCamera())
+    //    throw std::exception("Back camera error");
 
     FrontCamera->SetUpdateCameraThread(FrontCameraUpdateThread);
-    BackCamera->SetUpdateCameraThread(BackCameraUpdateThread);
+    /*BackCamera->SetUpdateCameraThread(BackCameraUpdateThread);*/
 }
 
 Gui::~Gui()
@@ -188,4 +191,10 @@ void Gui::FrameBufferResizeCallback(GLFWwindow* window, int fbW, int fbH)
 void Gui::GlfwErrorCallback(int error, const char* description)
 {
     fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+}
+
+void Gui::GlMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam)
+{
+    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
+        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, message);
 }

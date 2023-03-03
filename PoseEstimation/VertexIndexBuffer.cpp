@@ -1,20 +1,28 @@
 #include "VertexIndexBuffer.hpp"
 
-VertexIndexBuffer::VertexIndexBuffer(const std::vector<Vertex>& vertices) :
+VertexIndexBuffer::VertexIndexBuffer(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices) :
 	VAO(0),
+	EBO(0),
 	VBO(0),
-	VerticesCount(static_cast<int>(vertices.size()))
+	VerticesCount(static_cast<int>(vertices.size())),
+	IndicesCount(static_cast<int>(indices.size()))
 {
-	// Create VAO, VBO
+	// Create VAO
 	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-
-	// Bind VAO, VBO
 	glBindVertexArray(VAO);
+	
+	// Create VBO	
+	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-	// Bind data
 	glBufferData(GL_ARRAY_BUFFER, VerticesCount * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
+
+	// Create EBO
+	if (IndicesCount > 0)
+	{
+		glGenBuffers(1, &EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, IndicesCount * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
+	}
 
 	// Position
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, Position)));
@@ -33,6 +41,11 @@ VertexIndexBuffer::VertexIndexBuffer(const std::vector<Vertex>& vertices) :
 	glBindVertexArray(0);
 }
 
+VertexIndexBuffer::~VertexIndexBuffer()
+{
+	Clear();
+}
+
 void VertexIndexBuffer::Bind() const
 {
     glBindVertexArray(VAO);
@@ -45,5 +58,18 @@ void VertexIndexBuffer::Unbind() const
 
 void VertexIndexBuffer::Draw() const
 {
-    glDrawElements(GL_TRIANGLES, VerticesCount, GL_UNSIGNED_INT, nullptr);
+	if (IndicesCount == 0)
+		glDrawArrays(GL_TRIANGLES, 0, VerticesCount);
+	else
+		glDrawElements(GL_TRIANGLES, IndicesCount, GL_UNSIGNED_INT, nullptr);
+}
+
+void VertexIndexBuffer::Clear() const
+{
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glDeleteBuffers(1, &VBO);
+	glDeleteVertexArrays(1, &VAO);
 }

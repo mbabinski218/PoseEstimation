@@ -1,6 +1,6 @@
 #pragma once
 
-#include "imgui_impl_opengl3_loader.h"
+#include "glew/glew.h"
 #include "Vertex.hpp"
 #include <fstream>
 #include <sstream>

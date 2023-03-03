@@ -9,9 +9,9 @@ FrameBuffer::FrameBuffer(const int& width, const int& height) :
 {
     glGenFramebuffers(1, &FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
-    glGenTextures(1, &TextureId);
-    glBindTexture(GL_TEXTURE_2D, TextureId);
 
+    glCreateTextures(GL_TEXTURE_2D, 1, &TextureId);
+    glBindTexture(GL_TEXTURE_2D, TextureId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Width, Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -20,7 +20,7 @@ FrameBuffer::FrameBuffer(const int& width, const int& height) :
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, TextureId, 0);
 
-    glGenTextures(1, &DepthId);
+    glCreateTextures(GL_TEXTURE_2D, 1, &DepthId);
     glBindTexture(GL_TEXTURE_2D, DepthId);
     glTexStorage2D(GL_TEXTURE_2D, 1, GL_DEPTH24_STENCIL8, Width, Height);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -28,13 +28,17 @@ FrameBuffer::FrameBuffer(const int& width, const int& height) :
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, DepthId, 0);
 
     constexpr GLenum buffers[4] = { GL_COLOR_ATTACHMENT0 };
     glDrawBuffers(TextureId, buffers);
 
     Unbind();
+}
+
+FrameBuffer::~FrameBuffer()
+{
+    Clear();
 }
 
 void FrameBuffer::Bind() const

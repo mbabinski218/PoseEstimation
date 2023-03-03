@@ -77,6 +77,7 @@ void Shader::LinkProgram(GLuint vertexShader, GLuint fragmentShader)
 	glAttachShader(Id, fragmentShader);
 
 	glLinkProgram(Id);
+	glValidateProgram(Id);
 
 	glGetProgramiv(Id, GL_LINK_STATUS, &success);
 	if (!success)
@@ -98,7 +99,20 @@ void Shader::Unbind() const
 	glUseProgram(0);
 }
 
-void Shader::SetMat4Fv(glm::mat4& value, const GLchar* name) const
+void Shader::SetMat4(const glm::mat4& mat4, const std::string& name) const
 {
-	glUniformMatrix4fv(glGetUniformLocation(Id, name), 1, Transpose, glm::value_ptr(value));
+	const GLint myLoc = glGetUniformLocation(Id, name.c_str());
+	glUniformMatrix4fv(myLoc, 1, GL_FALSE, glm::value_ptr(mat4));
+}
+
+void Shader::SetVec3(const glm::vec3& vec3, const std::string& name) const
+{
+	const GLint myLoc = glGetUniformLocation(Id, name.c_str());
+	glProgramUniform3fv(Id, myLoc, 1, glm::value_ptr(vec3));
+}
+
+void Shader::SetF1(const float& v, const std::string& name) const
+{
+	const GLint myLoc = glGetUniformLocation(Id, name.c_str());
+	glUniform1f(myLoc, v);
 }

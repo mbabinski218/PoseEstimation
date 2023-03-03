@@ -1,9 +1,8 @@
 #pragma once
-
-#include <opencv2/opencv.hpp>
-#include <opencv2/videoio.hpp>
-#include "ImageConverter.hpp"
+#include "Libs.hpp"
 #include "Config.hpp"
+#include "PoseEstimation.hpp"
+#include "ImageConverter.hpp"
 
 class Camera
 {

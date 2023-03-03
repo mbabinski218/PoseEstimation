@@ -1,11 +1,6 @@
-#include <boost/exception/diagnostic_information.hpp> 
+#include "Libs.hpp"
 #include "Config.hpp"
-#include <iostream>
 #include "Gui.hpp"
-
-#ifdef _WIN32
-#include "Windows.h"
-#endif
 
 std::shared_ptr<Config> Setup()
 {
@@ -14,7 +9,7 @@ std::shared_ptr<Config> Setup()
     auto dnnMode           = DnnTargetMode::Cpu;
     auto protoTextPath     = R"(\models\pose\coco\pose_deploy_linevec.prototxt)";
     auto caffeModelPath    = R"(\models\pose\coco\pose_iter_440000.caffemodel)";
-    auto modelObjPath      = R"(\3dModels\Base.obj)";
+    auto modelObjPath      = R"(\3dModels\Man.obj)";
     auto vertexCorePath    = R"(\shaders\vertex_core.glsl)";
     auto fragmentCorePath  = R"(\shaders\fragment_core.glsl)";
     auto windowSize        = ImVec2(1920, 1080);
@@ -23,7 +18,7 @@ std::shared_ptr<Config> Setup()
     auto backCameraSize    = ImVec2(640, 480);
     auto videoCaptureApi   = cv::CAP_ANY;
     auto frontCameraLinker = CameraLinker(0);
-    auto backCameraLinker  = CameraLinker("http://192.168.1.108:4747/video");
+    auto backCameraLinker  = CameraLinker("http://192.168.0.158:4747/video");
     auto threshHold        = 0.1;
     auto poseParts         = 18;
     auto posePairs         = std::vector<std::vector<int>>({{1,2}, {1,5}, {2,3},
