@@ -67,17 +67,20 @@ void Mesh::Update(const ImVec2& screenSize)
 	FBuffer->Bind();
 	VIBuffer->Bind();
 
+	// Position
 	Aspect = screenSize.x / screenSize.y;
     UpdateViewMatrix();
 
     ModelShader->SetMat4(glm::mat4(1.0f), "model");
     ModelShader->SetMat4(ViewMatrix, "view");
     ModelShader->SetMat4(glm::perspective(glm::radians<float>(Fov), Aspect, Near, Far), "projection");
-    ModelShader->SetVec3(glm::vec3(0, 0, 3), "camPos");
+    ModelShader->SetVec3(glm::vec3(0.0f, 0.0f, 3.0f), "camPos");
 
-	ModelShader->SetVec3(glm::vec3(1.5f, 3.5f, 0.5f), "lightPosition");
+	// Light
+	ModelShader->SetVec3(LightPosition, "lightPosition");
 	ModelShader->SetVec3(glm::vec3(1.0f, 1.0f, 1.0f) * 100.0f, "lightColor");
 
+	// Texture
 	ModelShader->SetVec3(glm::vec3(0.3f, 0.3f, 0.3f), "albedo");
 	ModelShader->SetF1(0.2f, "roughness");
 	ModelShader->SetF1(0.1f, "metallic");
@@ -96,6 +99,7 @@ void Mesh::Reset()
 	ResetYaw();
 	ResetRoll();
 	ResetFocus();
+	ResetLightPosition();
 }
 
 void Mesh::OnMouseMove(const double& x, const double& y, const Button& button)

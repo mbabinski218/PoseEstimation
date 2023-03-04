@@ -1,7 +1,6 @@
 #pragma once
 #include "Libs.hpp"
 #include "Config.hpp"
-#include "PoseEstimation.hpp"
 #include "ImageConverter.hpp"
 
 class Camera

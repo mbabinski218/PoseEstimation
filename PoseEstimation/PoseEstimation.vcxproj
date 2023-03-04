@@ -178,6 +178,10 @@
     <ClInclude Include="Vertex.hpp" />
     <ClInclude Include="VertexIndexBuffer.hpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\fragment_core.glsl" />
+    <None Include="shaders\vertex_core.glsl" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

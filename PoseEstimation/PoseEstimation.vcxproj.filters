@@ -144,4 +144,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="shaders\fragment_core.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shaders\vertex_core.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+  </ItemGroup>
 </Project>

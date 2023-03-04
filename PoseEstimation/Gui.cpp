@@ -87,6 +87,7 @@ void Gui::Loop() const
         ImGui::SliderInt("Roll", Model->RollPtr(), -180, 180);
         ImGui::SliderFloat("Distance", Model->DistancePtr(), 0.0f, 30.0f);
         ImGui::SliderFloat3("Focus", Model->FocusPtr(), -2.0f, 2.0f);
+        ImGui::SliderFloat3("Light position", Model->LightPositionPtr(), -20.0f, 20.0f);
 
         ImGui::Spacing();
         if (ImGui::Button("Reset"))
@@ -198,6 +199,9 @@ void Gui::InitOpenGL() const
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
     glFrontFace(GL_CCW);
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
