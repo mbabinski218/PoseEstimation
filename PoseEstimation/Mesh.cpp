@@ -8,7 +8,7 @@ Mesh::Mesh(const std::string& modelObjPath, const char* vertexFilePath, const ch
 	Aspect(1.3f), Near(0.1f), Far(100.0f),
 	Focus(glm::vec3(0.0f, 0.0f, 0.0f))
 {
-	ResetAll();
+	Reset();
 
 	const auto path = std::filesystem::current_path().string() + modelObjPath;
     ObjLoader::Load(path, Vertices, Indices);
@@ -36,9 +36,9 @@ void Mesh::Render() const
 
 glm::quat Mesh::GetDirection() const
 {
-	const auto pitchInRadians = Pitch * glm::pi<float>() / 180.0f;
-	const auto yawInRadians = Yaw * glm::pi<float>() / 180.0f;
-	const auto rollInRadians = Roll * glm::pi<float>() / 180.0f;
+	const auto pitchInRadians = glm::radians<float>(Pitch);
+	const auto yawInRadians = glm::radians<float>(Yaw);
+	const auto rollInRadians = glm::radians<float>(Roll) + glm::radians(180.0f);
 
 	return glm::quat
 	{
@@ -53,22 +53,23 @@ glm::vec3 Mesh::GetForward() const
 
 void Mesh::UpdateViewMatrix()
 {
-    Position = Focus - GetForward() * Distance;
+    const auto position = Focus + glm::vec3(0.0f, 0.873f, 0.0f) - GetForward() * Distance;
     const glm::quat orientation = GetDirection();
 
-    ViewMatrix = glm::translate(glm::mat4(1.0f), Position) * glm::toMat4(orientation);
+    ViewMatrix = glm::translate(glm::mat4(1.0f), position) * glm::toMat4(orientation);
     ViewMatrix = glm::inverse(ViewMatrix);
 }
 
-void Mesh::Update()
+void Mesh::Update(const ImVec2& screenSize)
 {
     ModelShader->Bind();
 
+	Aspect = screenSize.x / screenSize.y;
     UpdateViewMatrix();
 
     ModelShader->SetMat4(glm::mat4(1.0f), "model");
     ModelShader->SetMat4(ViewMatrix, "view");
-    ModelShader->SetMat4(glm::perspective(Fov, Aspect, Near, Far), "projection");
+    ModelShader->SetMat4(glm::perspective(glm::radians<float>(Fov), Aspect, Near, Far), "projection");
     ModelShader->SetVec3(glm::vec3(0, 0, 3), "camPos");
 
 	//ModelShader->SetVec3(glm::vec3( 1.5f, 3.5f, 3.0f ), "lightPosition");
@@ -82,14 +83,7 @@ void Mesh::Update()
     ModelShader->Unbind();
 }
 
-void Mesh::ResetFov() { Fov = 45.0f; }
-void Mesh::ResetPitch() { Pitch = 0; }
-void Mesh::ResetYaw() { Yaw = 0; }
-void Mesh::ResetRoll() { Roll = 0; }
-void Mesh::ResetDistance() { Distance = 5.0f; }
-void Mesh::ResetFocus() { Focus = { 0.0f, 0.0f, 0.0f }; }
-
-void Mesh::ResetAll()
+void Mesh::Reset()
 {
 	ResetFov();
 	ResetDistance();

@@ -17,6 +17,8 @@ Gui::Gui(const std::shared_ptr<Config>& config) : Window(nullptr),	GuiConfig(con
 
     Model = std::make_unique<Mesh>(config->ModelObjPath, config->VertexCorePath, config->FragmentCorePath);
 
+    Padding = ImGui::GetStyle().WindowPadding;
+
     InitCamera();
 }
 
@@ -63,13 +65,12 @@ void Gui::Loop() const
     // 3d model window
     if (Show3dModel)
     {
-        Model->Update();
-        Model->Render();
-
 		ImGui::Begin("3D model");
 
-        const auto windowSize = ImGui::GetWindowSize();
-        ImGui::Image(Model->GetTexture(), ImVec2(windowSize.x - 17, windowSize.y - 35));
+        const auto windowSize = ImGui::GetWindowSize();        
+        Model->Update(windowSize);
+        Model->Render();
+        ImGui::Image(Model->GetTexture(), ImVec2(windowSize.x - 2.0f * Padding.x, windowSize.y - 4.5f * Padding.y));
 
 		ImGui::End();
     }
@@ -79,17 +80,16 @@ void Gui::Loop() const
     {
         ImGui::Begin("3D model controls");
 
-        ImGui::SliderFloat("Fov", &Model->Fov, 10.0f, 200.0f);
-        ImGui::SliderInt("Pitch", &Model->Pitch, -180, 180);
-        ImGui::SliderInt("Yaw", &Model->Yaw, -180, 180);
-        ImGui::SliderInt("Roll", &Model->Roll, -180, 180);
-        ImGui::SliderFloat("Distance", &Model->Distance, 0.0f, 30.0f);
-        ImGui::SliderFloat3("Focus", reinterpret_cast<float*>(&Model->Focus), -5.0f, 5.0f);
-
+        ImGui::SliderInt("Fov", Model->FovPtr(), 20, 90);
+        ImGui::SliderInt("Pitch", Model->PitchPtr(), -180, 180);
+        ImGui::SliderInt("Yaw", Model->YawPtr(), -180, 180);
+        ImGui::SliderInt("Roll", Model->RollPtr(), -180, 180);
+        ImGui::SliderFloat("Distance", Model->DistancePtr(), 0.0f, 30.0f);
+        ImGui::SliderFloat3("Focus", Model->FocusPtr(), -2.0f, 2.0f);
 
         ImGui::Spacing();
         if (ImGui::Button("Reset"))
-            Model->ResetAll();
+            Model->Reset();
 
         ImGui::End();
     }
@@ -172,6 +172,8 @@ void Gui::InitOpenGL() const
     ImGui::StyleColorsDark();
     ImGui::GetStyle().WindowBorderSize = 0.0f;
     ImGui::GetStyle().FrameRounding = 5.0f;
+    ImGui::GetStyle().WindowRounding = 5.0f;
+    ImGui::GetStyle().ItemSpacing = { 7.0f, 7.0f };
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(Window, true);

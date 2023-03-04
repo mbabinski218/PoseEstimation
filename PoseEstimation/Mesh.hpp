@@ -20,25 +20,32 @@ class Mesh
 	glm::vec3 Forward;
 	float Aspect, Near, Far;
 
-public:
 	glm::vec3 Focus;
-	glm::vec3 Position;
-	float Fov;
-	int Pitch, Yaw, Roll;
 	float Distance;
+	int Fov;
+	int Pitch, Yaw, Roll;
 	
 	//Methods
+public:
 	explicit Mesh(const std::string& modelObjPath, const char* vertexFilePath, const char* fragmentFilePath);
 	void* GetTexture() const;
 	void Render() const;
-	void Update();
-	void ResetFov();
-	void ResetPitch();
-	void ResetYaw();
-	void ResetRoll();
-	void ResetDistance();
-	void ResetFocus();
-	void ResetAll();
+	void Update(const ImVec2& screenSize);
+	void Reset();
+
+	void ResetFocus() { Focus = { 0.0f, 0.0f, 0.0f }; }
+	void ResetDistance() { Distance = 5.0f; }
+	void ResetFov() { Fov = 45.0f; }
+	void ResetPitch() { Pitch = 0; }
+	void ResetYaw() { Yaw = 0; }
+	void ResetRoll() { Roll = 0; }
+
+	float* FocusPtr() { return reinterpret_cast<float*>(&Focus); }
+	float* DistancePtr() { return &Distance; }
+	int* FovPtr() { return &Fov; }
+	int* PitchPtr() { return &Pitch; }
+	int* YawPtr() { return &Yaw; }
+	int* RollPtr() { return &Roll; }
 
 private:
 	void UpdateViewMatrix();

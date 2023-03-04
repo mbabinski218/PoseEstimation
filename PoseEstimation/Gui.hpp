@@ -8,7 +8,6 @@
 
 class Gui
 {
-public:
 	// Variables
 	GLFWwindow* Window;
 	std::shared_ptr<Config> GuiConfig;
@@ -21,6 +20,7 @@ public:
 
 	int FrameBufferWidth;
 	int FrameBufferHeight;
+	ImVec2 Padding;
 
 	inline static ImVec4 BgColor = ImVec4(0.10f, 0.10f, 0.10f, 1.0f);
 	inline static std::unique_ptr<std::jthread> FrontCameraUpdateThread = std::make_unique<std::jthread>();
@@ -30,6 +30,7 @@ public:
 	inline static bool Show3dModelControls = true;
 
 	// Methods
+public:
 	explicit Gui(const std::shared_ptr<Config>& config);
 	~Gui();
 	void Render() const;
