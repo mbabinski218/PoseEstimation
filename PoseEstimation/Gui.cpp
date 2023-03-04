@@ -1,7 +1,8 @@
 #include "Gui.hpp"
 
 // Methods
-Gui::Gui(const std::shared_ptr<Config>& config) : Window(nullptr),	GuiConfig(config),	FrameBufferWidth(0), FrameBufferHeight(0)
+Gui::Gui(const std::shared_ptr<Config>& config) : Window(nullptr),	GuiConfig(config),
+	FrontCameraCancellationToken(false), BackCameraCancellationToken(false)
 {
     InitGlfw();
     InitWindow();
@@ -153,9 +154,8 @@ void Gui::InitWindow()
         static_cast<int>(GuiConfig->WindowSize.y), GuiConfig->Title, nullptr, nullptr);
 
     if (Window == nullptr)
-        throw std::exception("Gui window init error");
+        throw std::exception("Gui window init failed");
 
-    glfwGetFramebufferSize(Window, &FrameBufferWidth, &FrameBufferHeight);
     glfwSetFramebufferSizeCallback(Window, FrameBufferResizeCallback);
     glfwMakeContextCurrent(Window);
 }
@@ -214,12 +214,25 @@ void Gui::InitCamera() const
     //if (!BackCamera->OpenCamera())
     //    throw std::exception("Back camera error");
 
-    FrontCamera->SetUpdateCameraThread(FrontCameraUpdateThread);
-    /*BackCamera->SetUpdateCameraThread(BackCameraUpdateThread);*/
+    FrontCamera->SetUpdateCameraThread(FrontCameraUpdateThread, FrontCameraCancellationToken);
+    /*BackCamera->SetUpdateCameraThread(BackCameraUpdateThread, BackCameraCancellationToken);*/
+}
+
+void Gui::ShutdownCamera()
+{
+    FrontCameraCancellationToken = true;
+    //BackCameraCancellationToken = true;
 }
 
 Gui::~Gui()
 {
+    ShutdownCamera();
+
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_BLEND);
+
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

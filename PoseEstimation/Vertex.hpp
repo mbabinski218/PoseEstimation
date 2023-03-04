@@ -1,7 +1,5 @@
 #pragma once
-
-#include "glm/glm.hpp"
-#include "glm/gtx/hash.hpp"
+#include "Libs.hpp"
 
 struct Vertex
 {

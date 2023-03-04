@@ -1,10 +1,7 @@
 #pragma once
-
+#include "Libs.hpp"
 #include "ImageConverter.hpp"
-#include <opencv2/core.hpp>
-#include <opencv2/dnn.hpp>
 #include "KeyPoint.hpp"
-#include <filesystem>
 #include "Config.hpp"
 
 class PoseEstimation

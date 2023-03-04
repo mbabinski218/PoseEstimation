@@ -1,7 +1,5 @@
 #pragma once
-
-#include <opencv2/videoio.hpp>
-#include "imgui.h"
+#include "Libs.hpp"
 
 enum DnnTargetMode
 {

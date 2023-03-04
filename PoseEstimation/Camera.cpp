@@ -26,20 +26,20 @@ bool Camera::OpenCamera() const
 
 	if (isOpened)
 	{
-		VideoCapture->read(*Frame);
+		Read();
 		Image->LoadMat(*Frame);
 	}
 
 	return isOpened;
 }
 
-void Camera::SetUpdateCameraThread(std::unique_ptr<std::jthread>& thread) const
+void Camera::SetUpdateCameraThread(std::unique_ptr<std::jthread>& thread, const std::atomic<bool>& cancellationToken) const
 {
-	thread = std::make_unique<std::jthread>([=]() {
-		while (true)
+	thread = std::make_unique<std::jthread>([&]()
+	{
+		while (!cancellationToken)
 		{
-			VideoCapture->read(*Frame);
-			cvtColor(*Frame, *Frame, cv::COLOR_BGR2RGB);				
+			Read();			
 		}
 	});
 }
@@ -47,6 +47,7 @@ void Camera::SetUpdateCameraThread(std::unique_ptr<std::jthread>& thread) const
 void Camera::Read() const
 {
 	VideoCapture->read(*Frame);
+	cvtColor(*Frame, *Frame, cv::COLOR_BGR2RGB);
 }
 
 void Camera::UpdateImage() const

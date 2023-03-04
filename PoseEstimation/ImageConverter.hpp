@@ -1,9 +1,5 @@
 #pragma once
-
-#include "glm/fwd.hpp"
-#include "glm/gtc/type_ptr.hpp"
-#include "opencv2/imgproc.hpp"
-#include <GLFW/glfw3.h>
+#include "Libs.hpp"
 
 class ImageConverter
 {

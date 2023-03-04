@@ -19,9 +19,9 @@ class Gui
 	std::unique_ptr<PoseEstimation> BackCameraEstimator;
 	std::unique_ptr<Mesh> Model;
 
-	int FrameBufferWidth;
-	int FrameBufferHeight;
 	ImVec2 Padding;
+	std::atomic<bool> FrontCameraCancellationToken;
+	std::atomic<bool> BackCameraCancellationToken;
 
 	inline static ImVec4 BgColor = ImVec4(0.10f, 0.10f, 0.10f, 1.0f);
 	inline static std::unique_ptr<std::jthread> FrontCameraUpdateThread = std::make_unique<std::jthread>();
@@ -44,6 +44,7 @@ private:
 	void InitGlew() const;
 	void InitOpenGL() const;
 	void InitCamera() const;
+	void ShutdownCamera();
 
 	static void GlfwErrorCallback(int error, const char* description);
 	static void FrameBufferResizeCallback(GLFWwindow* window, int fbW, int fbH);

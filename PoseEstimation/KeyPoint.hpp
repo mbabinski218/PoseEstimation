@@ -1,6 +1,5 @@
 #pragma once
-
-#include <opencv2/core/types.hpp>
+#include "Libs.hpp"
 
 struct KeyPoint
 {

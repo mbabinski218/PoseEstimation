@@ -64,6 +64,8 @@ void Mesh::UpdateViewMatrix()
 void Mesh::Update(const ImVec2& screenSize)
 {
     ModelShader->Bind();
+	FBuffer->Bind();
+	VIBuffer->Bind();
 
 	Aspect = screenSize.x / screenSize.y;
     UpdateViewMatrix();
@@ -73,14 +75,16 @@ void Mesh::Update(const ImVec2& screenSize)
     ModelShader->SetMat4(glm::perspective(glm::radians<float>(Fov), Aspect, Near, Far), "projection");
     ModelShader->SetVec3(glm::vec3(0, 0, 3), "camPos");
 
-	//ModelShader->SetVec3(glm::vec3(1.5f, 3.5f, 0.5f), "lightPosition");
-	//ModelShader->SetVec3(glm::vec3(1.0f, 1.0f, 1.0f) * 100.0f, "lightColor");
+	ModelShader->SetVec3(glm::vec3(1.5f, 3.5f, 0.5f), "lightPosition");
+	ModelShader->SetVec3(glm::vec3(1.0f, 1.0f, 1.0f) * 100.0f, "lightColor");
 
-	//ModelShader->SetVec3(glm::vec3(0.3f, 0.3f, 0.3f), "albedo");
-	//ModelShader->SetF1(0.2f, "roughness");
-	//ModelShader->SetF1(0.1f, "metallic");
-	//ModelShader->SetF1(1.0f, "ao");
+	ModelShader->SetVec3(glm::vec3(0.3f, 0.3f, 0.3f), "albedo");
+	ModelShader->SetF1(0.2f, "roughness");
+	ModelShader->SetF1(0.1f, "metallic");
+	ModelShader->SetF1(1.0f, "ao");
 
+	VIBuffer->Unbind();
+	FBuffer->Unbind();
     ModelShader->Unbind();
 }
 
@@ -108,7 +112,7 @@ void Mesh::OnMouseMove(const double& x, const double& y, const Button& button)
 		else if (temp <= -180)
 			Yaw = -180;
 		else
-			Yaw = temp;
+			Yaw = static_cast<int>(temp);
 	}
 
 	CurrentPos = pos;

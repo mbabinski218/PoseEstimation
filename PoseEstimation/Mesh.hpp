@@ -39,7 +39,7 @@ public:
 
 	void ResetFocus() { Focus = { 0.0f, 0.0f, 0.0f }; }
 	void ResetDistance() { Distance = 5.0f; }
-	void ResetFov() { Fov = 45.0f; }
+	void ResetFov() { Fov = 45; }
 	void ResetPitch() { Pitch = 0; }
 	void ResetYaw() { Yaw = 0; }
 	void ResetRoll() { Roll = 0; }

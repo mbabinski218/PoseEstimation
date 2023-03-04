@@ -18,6 +18,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtx/quaternion.hpp"
+#include "glm/gtx/hash.hpp"
 #include <exception>
 #include <fstream>
 #include <string>
