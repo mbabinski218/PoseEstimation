@@ -6,7 +6,8 @@ Mesh::Mesh(const std::string& modelObjPath, const char* vertexFilePath, const ch
 	ViewMatrix(glm::mat4(0.f)),
 	Forward(glm::vec3(0.0f, 0.0f, -0.5f)),
 	Aspect(1.3f), Near(0.1f), Far(100.0f),
-	Focus(glm::vec3(0.0f, 0.0f, 0.0f))
+	RotationSpeed(100.0f),
+	CurrentPos(glm::vec2(0.0f, 0.0f))
 {
 	Reset();
 
@@ -72,10 +73,10 @@ void Mesh::Update(const ImVec2& screenSize)
     ModelShader->SetMat4(glm::perspective(glm::radians<float>(Fov), Aspect, Near, Far), "projection");
     ModelShader->SetVec3(glm::vec3(0, 0, 3), "camPos");
 
-	//ModelShader->SetVec3(glm::vec3( 1.5f, 3.5f, 3.0f ), "lightPosition");
+	//ModelShader->SetVec3(glm::vec3(1.5f, 3.5f, 0.5f), "lightPosition");
 	//ModelShader->SetVec3(glm::vec3(1.0f, 1.0f, 1.0f) * 100.0f, "lightColor");
 
-	//ModelShader->SetVec3(glm::vec3(1.0f, 0.0f, 0.0f), "albedo");
+	//ModelShader->SetVec3(glm::vec3(0.3f, 0.3f, 0.3f), "albedo");
 	//ModelShader->SetF1(0.2f, "roughness");
 	//ModelShader->SetF1(0.1f, "metallic");
 	//ModelShader->SetF1(1.0f, "ao");
@@ -91,4 +92,24 @@ void Mesh::Reset()
 	ResetYaw();
 	ResetRoll();
 	ResetFocus();
+}
+
+void Mesh::OnMouseMove(const double& x, const double& y, const Button& button)
+{
+	const auto pos = glm::vec2(x, y);
+
+	if (button == Button::Right)
+	{
+		const auto delta = (pos - CurrentPos) * 0.004f;
+		const auto temp = Yaw + delta.x * RotationSpeed;
+
+		if (temp >= 180)
+			Yaw = 180;
+		else if (temp <= -180)
+			Yaw = -180;
+		else
+			Yaw = temp;
+	}
+
+	CurrentPos = pos;
 }

@@ -5,6 +5,7 @@
 #include "PoseEstimation.hpp"
 #include "Camera.hpp"
 #include "ImageConverter.hpp"
+#include "Input.hpp"
 
 class Gui
 {
@@ -37,6 +38,7 @@ public:
 
 private:
 	void Loop() const;
+	void HandleInput() const;
 	void InitGlfw() const;
 	void InitWindow();
 	void InitGlew() const;

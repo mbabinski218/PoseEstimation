@@ -2,6 +2,7 @@
 #include "Libs.hpp"
 #include "Vertex.hpp"
 #include "FrameBuffer.hpp"
+#include "Input.hpp"
 #include "Shader.hpp"
 #include "VertexIndexBuffer.hpp"
 #include "ObjLoader.hpp"
@@ -19,6 +20,8 @@ class Mesh
 	glm::mat4 ViewMatrix;
 	glm::vec3 Forward;
 	float Aspect, Near, Far;
+	float RotationSpeed;
+	glm::vec2 CurrentPos;
 
 	glm::vec3 Focus;
 	float Distance;
@@ -32,6 +35,7 @@ public:
 	void Render() const;
 	void Update(const ImVec2& screenSize);
 	void Reset();
+	void OnMouseMove(const double& x, const double& y, const Button& button);
 
 	void ResetFocus() { Focus = { 0.0f, 0.0f, 0.0f }; }
 	void ResetDistance() { Distance = 5.0f; }

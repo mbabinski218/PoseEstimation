@@ -95,6 +95,16 @@ void Gui::Loop() const
     }
 }
 
+void Gui::HandleInput() const
+{
+    double x, y;
+    glfwGetCursorPos(Window, &x, &y);
+
+    // Model input
+    if(Show3dModel)
+		Model->OnMouseMove(x, y, Input::GetPressedButton(Window));
+}
+
 void Gui::Render() const
 {
 	while (!glfwWindowShouldClose(Window))
@@ -108,6 +118,9 @@ void Gui::Render() const
 
         // Interface
         Loop();
+
+        // Input
+        HandleInput();
 
         // Rendering
         ImGui::Render();
