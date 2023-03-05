@@ -64,8 +64,6 @@ void Mesh::UpdateViewMatrix()
 void Mesh::Update(const ImVec2& screenSize)
 {
     ModelShader->Bind();
-	FBuffer->Bind();
-	VIBuffer->Bind();
 
 	// Position
 	Aspect = screenSize.x / screenSize.y;
@@ -86,8 +84,6 @@ void Mesh::Update(const ImVec2& screenSize)
 	ModelShader->SetF1(0.1f, "metallic");
 	ModelShader->SetF1(1.0f, "ao");
 
-	VIBuffer->Unbind();
-	FBuffer->Unbind();
     ModelShader->Unbind();
 }
 
@@ -106,7 +102,7 @@ void Mesh::OnMouseMove(const double& x, const double& y, const Button& button)
 {
 	const auto pos = glm::vec2(x, y);
 
-	if (button == Button::Right)
+	if (button == Button::RIGHT)
 	{
 		const auto delta = (pos - CurrentPos) * 0.004f;
 		const auto temp = Yaw + delta.x * RotationSpeed;

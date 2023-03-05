@@ -6,7 +6,7 @@ std::shared_ptr<Config> Setup()
 {
 	auto glslVersion       = "#version 430 core";
     auto title             = "Pose estimation";
-    auto dnnMode           = DnnTargetMode::Cpu;
+    auto dnnMode           = DnnTargetMode::CPU;
     auto protoTextPath     = R"(\models\pose\coco\pose_deploy_linevec.prototxt)";
     auto caffeModelPath    = R"(\models\pose\coco\pose_iter_440000.caffemodel)";
     auto modelObjPath      = R"(\3dModels\Man.obj)";

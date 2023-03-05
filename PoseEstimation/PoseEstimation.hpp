@@ -1,7 +1,6 @@
 #pragma once
 #include "Libs.hpp"
 #include "ImageConverter.hpp"
-#include "KeyPoint.hpp"
 #include "Config.hpp"
 
 class PoseEstimation
@@ -9,9 +8,10 @@ class PoseEstimation
 	// Variables
 	std::shared_ptr<cv::dnn::Net> Net;
 	std::unique_ptr<ImageConverter> Image;
+	std::unique_ptr<cv::Mat> OutputBlob;
 
 	std::vector<std::vector<int>> PosePairs;
-	double ThreshHold = 0.01f;
+	double ThreshHold;
 	cv::Size2f Size;
 	int PoseParts;
 
@@ -25,6 +25,6 @@ public:
 	static std::shared_ptr<cv::dnn::Net> CreateDnnNet(const std::string& protoTextPath, const std::string& caffeModel, const DnnTargetMode& dnnMode);
 
 private:
-	std::unique_ptr<cv::Mat> FindPose(const std::unique_ptr<cv::Mat>& mat) const;
-	void AddPoseToImage(const std::unique_ptr<cv::Mat>& outputBlob, const std::unique_ptr<cv::Mat>& mat) const;
+	void FindPose(const std::unique_ptr<cv::Mat>& mat) const;
+	void AddPoseToImage(const std::unique_ptr<cv::Mat>& mat) const;
 };

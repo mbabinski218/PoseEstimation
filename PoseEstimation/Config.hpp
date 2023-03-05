@@ -3,8 +3,8 @@
 
 enum DnnTargetMode
 {
-	Cpu,
-	Cuda
+	CPU,
+	CUDA
 };
 
 template<typename T>

@@ -3,10 +3,10 @@
 
 enum Button
 {
-	Left, 
-	Right,
-	Middle,
-	None
+	LEFT, 
+	RIGHT,
+	MIDDLE,
+	NONE
 };
 
 class Input
@@ -15,14 +15,14 @@ public:
 	static Button GetPressedButton(GLFWwindow* window)
 	{
 		if (glfwGetMouseButton(window, 0) == GLFW_PRESS)
-			return Button::Left;
+			return Button::LEFT;
 
 		if (glfwGetMouseButton(window, 1) == GLFW_PRESS)
-			return Button::Right;
+			return Button::RIGHT;
 
 		if (glfwGetMouseButton(window, 2) == GLFW_PRESS)
-			return Button::Middle;
+			return Button::MIDDLE;
 
-		return Button::None;
+		return Button::NONE;
 	}
 };
