@@ -175,6 +175,7 @@
     <ClInclude Include="ObjLoader.hpp" />
     <ClInclude Include="PoseEstimation.hpp" />
     <ClInclude Include="Shader.hpp" />
+    <ClInclude Include="Utility.hpp" />
     <ClInclude Include="Vertex.hpp" />
     <ClInclude Include="VertexIndexBuffer.hpp" />
   </ItemGroup>
