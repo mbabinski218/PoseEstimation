@@ -145,10 +145,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragment_core.glsl">
+    <None Include="shaders\fragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="shaders\vertex_core.glsl">
+    <None Include="shaders\vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

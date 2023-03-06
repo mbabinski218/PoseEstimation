@@ -3,7 +3,6 @@
 
 class Shader
 {
-public:
 	// Variables
 	GLuint Id;
 	const int VersionMajor;
@@ -18,10 +17,10 @@ public:
 
 	void SetVec3(const glm::vec3& vec3, const std::string& name) const;
 	void SetMat4(const glm::mat4& mat4, const std::string& name) const;
-	void SetF1(const float& v, const std::string& name) const;
+	void SetF1(const float& value, const std::string& name) const;
 
 private:
 	std::string LoadShaderSource(const char* filePath) const;
-	GLuint LoadShader(GLenum type, const char* filePath) const;
-	void LinkProgram(GLuint vertexShader, GLuint fragmentShader);
+	GLuint LoadShader(const GLenum& type, const char* filePath) const;
+	void LinkProgram(const GLuint& vertexShader, GLuint fragmentShader);
 };

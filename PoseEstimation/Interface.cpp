@@ -10,8 +10,8 @@ std::shared_ptr<Config> Setup()
     auto protoTextPath     = R"(\models\pose\coco\pose_deploy_linevec.prototxt)";
     auto caffeModelPath    = R"(\models\pose\coco\pose_iter_440000.caffemodel)";
     auto modelObjPath      = R"(\3dModels\Man.obj)";
-    auto vertexCorePath    = R"(\shaders\vertex_core.glsl)";
-    auto fragmentCorePath  = R"(\shaders\fragment_core.glsl)";
+    auto vertexCorePath    = R"(\shaders\vertex.glsl)";
+    auto fragmentCorePath  = R"(\shaders\fragment.glsl)";
 	auto fontPath          = R"(\fonts\CascadiaMono.ttf)";
     auto windowSize        = ImVec2(1920, 1080);
     auto frontCameraSize   = ImVec2(640, 480);

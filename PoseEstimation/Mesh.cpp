@@ -37,9 +37,9 @@ void Mesh::Render() const
 
 glm::quat Mesh::GetDirection() const
 {
-	const auto pitchInRadians = glm::radians<float>(Pitch);
-	const auto yawInRadians = glm::radians<float>(Yaw);
-	const auto rollInRadians = glm::radians<float>(Roll) + glm::radians(180.0f);
+	const auto pitchInRadians = glm::radians<float>(static_cast<float>(Pitch));
+	const auto yawInRadians = glm::radians<float>(static_cast<float>(Yaw));
+	const auto rollInRadians = glm::radians<float>(static_cast<float>(Roll)) + glm::radians(180.0f);
 
 	return glm::quat
 	{
@@ -71,12 +71,12 @@ void Mesh::Update(const ImVec2& screenSize)
 
     ModelShader->SetMat4(glm::mat4(1.0f), "model");
     ModelShader->SetMat4(ViewMatrix, "view");
-    ModelShader->SetMat4(glm::perspective(glm::radians<float>(Fov), Aspect, Near, Far), "projection");
+    ModelShader->SetMat4(glm::perspective(glm::radians<float>(static_cast<float>(Fov)), Aspect, Near, Far), "projection");
     ModelShader->SetVec3(glm::vec3(0.0f, 0.0f, 3.0f), "camPos");
 
 	// Light
 	ModelShader->SetVec3(LightPosition, "lightPosition");
-	ModelShader->SetVec3(glm::vec3(1.0f, 1.0f, 1.0f) * 100.0f, "lightColor");
+	ModelShader->SetVec3(glm::vec3(1.0f, 1.0f, 1.0f) * 1000.0f, "lightColor");
 
 	// Texture
 	ModelShader->SetVec3(glm::vec3(0.3f, 0.3f, 0.3f), "albedo");

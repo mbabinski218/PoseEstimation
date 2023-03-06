@@ -18,7 +18,7 @@ void ObjLoader::Load(const std::string& path, std::vector<Vertex>& vertices, std
 
     std::unordered_map<Vertex, uint32_t> uniqueVertices;
     for (const auto& shape : shapes)
-    {
+    {  
         for (const auto& index : shape.mesh.indices)
         {
             Vertex vertex{};

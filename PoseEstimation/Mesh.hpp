@@ -44,7 +44,7 @@ public:
 	void ResetPitch() { Pitch = 0; }
 	void ResetYaw() { Yaw = 0; }
 	void ResetRoll() { Roll = 0; }
-	void ResetLightPosition() { LightPosition = {3.0f, 2.5f, 0.0f}; }
+	void ResetLightPosition() { LightPosition = {3.0f, 10.0f, 7.0f}; }
 
 	float* LightPositionPtr() { return reinterpret_cast<float*>(&LightPosition); }
 	float* FocusPtr() { return reinterpret_cast<float*>(&Focus); }
