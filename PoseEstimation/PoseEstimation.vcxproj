@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Demo.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Gui.cpp" />
     <ClCompile Include="ImageConverter.cpp" />
@@ -150,12 +151,15 @@
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="ObjLoader.cpp" />
     <ClCompile Include="PoseEstimation.cpp" />
+    <ClCompile Include="Runnable.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="VertexIndexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Demo.hpp" />
     <ClInclude Include="FrameBuffer.hpp" />
     <ClInclude Include="Input.hpp" />
+    <ClInclude Include="Runnable.hpp" />
     <ClInclude Include="Libs.hpp" />
     <ClInclude Include="Mesh.hpp" />
     <ClInclude Include="Config.hpp" />

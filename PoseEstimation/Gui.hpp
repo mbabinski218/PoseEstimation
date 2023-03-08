@@ -1,17 +1,14 @@
 #pragma once
-#include "Libs.hpp"
-#include "Config.hpp"
+#include "Runnable.hpp"
 #include "Mesh.hpp"
 #include "PoseEstimation.hpp"
 #include "Camera.hpp"
 #include "ImageConverter.hpp"
 #include "Input.hpp"
 
-class Gui
+class Gui : public Runnable
 {
 	// Variables
-	GLFWwindow* Window;
-	std::shared_ptr<Config> GuiConfig;
 	std::shared_ptr<cv::dnn::Net> Net;
 	std::unique_ptr<Camera> FrontCamera;
 	std::unique_ptr<Camera> BackCamera;
@@ -23,7 +20,6 @@ class Gui
 	std::atomic<bool> FrontCameraCancellationToken;
 	std::atomic<bool> BackCameraCancellationToken;
 
-	inline static ImVec4 BgColor = ImVec4(0.10f, 0.10f, 0.10f, 1.0f);
 	inline static std::unique_ptr<std::jthread> FrontCameraUpdateThread = std::make_unique<std::jthread>();
 	inline static std::unique_ptr<std::jthread> BackCameraUpdateThread = std::make_unique<std::jthread>();
 	inline static bool ShowPoseEstimation = false;
@@ -32,21 +28,13 @@ class Gui
 
 	// Methods
 public:
-	explicit Gui(const std::shared_ptr<Config>& config);
-	~Gui();
-	void Render() const;
+	explicit Gui();
+	~Gui() override;
 
 private:
-	void Loop() const;
-	void HandleInput() const;
-	void InitGlfw() const;
-	void InitWindow();
-	void InitGlew() const;
-	void InitOpenGL() const;
+	void Loop() const override;
+	void HandleInput() const override;
+
 	void InitCamera() const;
 	void ShutdownCamera();
-
-	static void GlfwErrorCallback(int error, const char* description);
-	static void FrameBufferResizeCallback(GLFWwindow* window, int fbW, int fbH);
-	static void GLAPIENTRY GlMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam);
 };

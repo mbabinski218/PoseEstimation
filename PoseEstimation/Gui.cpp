@@ -1,22 +1,16 @@
 #include "Gui.hpp"
 
 // Methods
-Gui::Gui(const std::shared_ptr<Config>& config) : Window(nullptr),	GuiConfig(config),
-	FrontCameraCancellationToken(false), BackCameraCancellationToken(false)
+Gui::Gui() : Runnable(), FrontCameraCancellationToken(false), BackCameraCancellationToken(false)
 {
-    InitGlfw();
-    InitWindow();
-    InitGlew();
-    InitOpenGL();    
-
-    FrontCamera = std::make_unique<Camera>(config->FrontCameraLinker, config->FrontCameraSize, config->CameraApi);
+    FrontCamera = std::make_unique<Camera>(GuiConfig->FrontCameraLinker, GuiConfig->FrontCameraSize, GuiConfig->CameraApi);
     //BackCamera = std::make_unique<Camera>(config->BackCameraLinker, config->BackCameraSize, config->CameraApi);
 
-    Net = PoseEstimation::CreateDnnNet(config->ProtoTextPath, config->CaffeModel, config->DnnMode);
-    FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, config->FrontCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
-    BackCameraEstimator = std::make_unique<PoseEstimation>(Net, config->BackCameraSize, config->PoseParts, config->PosePairs, config->ThreshHold);
+    Net = PoseEstimation::CreateDnnNet(GuiConfig->ProtoTextPath, GuiConfig->CaffeModel, GuiConfig->DnnMode);
+    FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, GuiConfig->FrontCameraSize, GuiConfig->PoseParts, GuiConfig->PosePairs, GuiConfig->ThreshHold);
+    BackCameraEstimator = std::make_unique<PoseEstimation>(Net, GuiConfig->BackCameraSize, GuiConfig->PoseParts, GuiConfig->PosePairs, GuiConfig->ThreshHold);
 
-    Model = std::make_unique<Mesh>(config->ModelObjPath, config->VertexCorePath, config->FragmentCorePath);
+    Model = std::make_unique<Mesh>(GuiConfig->ModelObjPath, GuiConfig->VertexCorePath, GuiConfig->FragmentCorePath);
 
     Padding = ImGui::GetStyle().WindowPadding;
 
@@ -107,110 +101,6 @@ void Gui::HandleInput() const
 		Model->OnMouseMove(x, y, Input::GetPressedButton(Window));
 }
 
-void Gui::Render() const
-{
-	while (!glfwWindowShouldClose(Window))
-    {
-        glfwPollEvents();
-
-        // Start the ImGui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        // Interface
-        Loop();
-
-        // Input
-        HandleInput();
-
-        // Rendering
-        ImGui::Render();
-        int displayW, displayH;
-        glfwGetFramebufferSize(Window, &displayW, &displayH);
-        glViewport(0, 0, displayW, displayH);
-        glClearColor(BgColor.x * BgColor.w, BgColor.y * BgColor.w, BgColor.z * BgColor.w, BgColor.w);
-        glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        glfwSwapBuffers(Window);
-    }
-}
-
-void Gui::InitGlfw() const
-{
-    glfwSetErrorCallback(GlfwErrorCallback);
-    if (!glfwInit())
-        throw std::exception("GLFW init failed");
-}
-
-void Gui::InitWindow()
-{
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-    glfwWindowHint(GLFW_RESIZABLE, false);
-
-    Window = glfwCreateWindow(static_cast<int>(GuiConfig->WindowSize.x), 
-        static_cast<int>(GuiConfig->WindowSize.y), GuiConfig->Title, nullptr, nullptr);
-
-    if (Window == nullptr)
-        throw std::exception("Gui window init failed");
-
-    glfwSetFramebufferSizeCallback(Window, FrameBufferResizeCallback);
-    glfwMakeContextCurrent(Window);
-}
-
-void Gui::InitGlew() const
-{
-    glewExperimental = GL_TRUE;
-    if (glewInit() != GLEW_OK)
-        throw std::exception("GLEW init failed");
-}
-
-void Gui::InitOpenGL() const
-{
-    // Vsync
-    glfwSwapInterval(true);
-
-    // Setup ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-
-    // Setup ImGui font
-    const auto path = std::filesystem::current_path().string() + GuiConfig->FontPath;
-    io.FontDefault = io.Fonts->AddFontFromFileTTF(path.c_str(), 14.0f);
-
-    // Setup ImGui style
-    ImGui::StyleColorsDark();
-    ImGui::GetStyle().WindowBorderSize = 0.0f;
-    ImGui::GetStyle().FrameRounding = 5.0f;
-    ImGui::GetStyle().WindowRounding = 5.0f;
-    ImGui::GetStyle().ItemSpacing = { 7.0f, 7.0f };
-
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(Window, true);
-    ImGui_ImplOpenGL3_Init(GuiConfig->GlslVersion);
-
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_DEPTH_TEST);
-
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_BACK);
-    glFrontFace(GL_CCW);
-
-    glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
-
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    //glEnable(GL_DEBUG_OUTPUT);
-    //glDebugMessageCallback(GlMessageCallback, nullptr);
-
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-}
-
 void Gui::InitCamera() const
 {
     if (!FrontCamera->OpenCamera())
@@ -231,31 +121,5 @@ void Gui::ShutdownCamera()
 Gui::~Gui()
 {
     ShutdownCamera();
-
-    glDisable(GL_TEXTURE_2D);
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_BLEND);
-
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-    glfwDestroyWindow(Window);
-    glfwTerminate();
-}
-
-void Gui::FrameBufferResizeCallback(GLFWwindow* window, int fbW, int fbH)
-{
-    glViewport(0, 0, fbW, fbH);
-};
-
-void Gui::GlfwErrorCallback(int error, const char* description)
-{
-    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
-}
-
-void Gui::GlMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam)
-{
-    fprintf(stderr, "GL CALLBACK: %s type = 0x%x, severity = 0x%x, message = %s\n",
-        (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""), type, severity, message);
+    Shutdown();
 }

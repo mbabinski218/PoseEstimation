@@ -1,13 +1,13 @@
 #include "Libs.hpp"
-#include "Config.hpp"
+#include "Runnable.hpp"
+#include "Demo.hpp"
 #include "Gui.hpp"
 
 int main()
 {
-    try
+    try    
     {
-        const auto gui = Gui(Config::Get());
-    	gui.Render();
+        Run(Demo());
     }
     catch(...)
     {
