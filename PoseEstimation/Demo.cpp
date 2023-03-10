@@ -36,14 +36,28 @@ void Demo::Loop() const
     {
         ImGui::Begin("3D model controls");
 
+        // Camera
+        ImGui::Spacing();
+        ImGui::Text("Camera");
         ImGui::SliderInt("Fov", Model->FovPtr(), 20, 90);
         ImGui::SliderInt("Pitch", Model->PitchPtr(), -180, 180);
         ImGui::SliderInt("Yaw", Model->YawPtr(), -180, 180);
         ImGui::SliderInt("Roll", Model->RollPtr(), -180, 180);
         ImGui::SliderFloat("Distance", Model->DistancePtr(), 0.0f, 30.0f);
         ImGui::SliderFloat3("Focus", Model->FocusPtr(), -2.0f, 2.0f);
-        ImGui::SliderFloat3("Light position", Model->LightPositionPtr(), -20.0f, 20.0f);
 
+        // Light
+        ImGui::Spacing();
+        ImGui::Text("Light");
+        ImGui::SliderFloat3("Position", Model->LightPositionPtr(), -20.0f, 20.0f);
+
+        // Model
+        ImGui::Spacing();
+        ImGui::Text("Model");
+        ImGui::SliderFloat3("Rotation", Model->RotationPtr(), -180.0f, 180.0f);
+        ImGui::SliderFloat3("Scale", Model->ScalePtr(), 0.0f, 5.0f);
+
+        // Reset
         ImGui::Spacing();
         if (ImGui::Button("Reset"))
             Model->Reset();

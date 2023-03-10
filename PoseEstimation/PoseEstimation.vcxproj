@@ -159,6 +159,8 @@
     <ClInclude Include="Demo.hpp" />
     <ClInclude Include="FrameBuffer.hpp" />
     <ClInclude Include="Input.hpp" />
+    <ClInclude Include="LightPoint.hpp" />
+    <ClInclude Include="Material.hpp" />
     <ClInclude Include="Runnable.hpp" />
     <ClInclude Include="Libs.hpp" />
     <ClInclude Include="Mesh.hpp" />

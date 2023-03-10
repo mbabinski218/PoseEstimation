@@ -3,7 +3,8 @@
 Mesh::Mesh(const std::string& modelObjPath, const char* vertexFilePath, const char* fragmentFilePath) :
 	ModelShader(std::make_unique<Shader>(vertexFilePath, fragmentFilePath)),
 	FBuffer(std::make_unique<FrameBuffer>(1280, 720)),
-	ViewMatrix(glm::mat4(0.f)),
+	ViewMatrix(glm::mat4(0.0f)),
+	ModelMatrix(glm::mat4(1.0f)),
 	Forward(glm::vec3(0.0f, 0.0f, -0.5f)),
 	Aspect(1.3f), Near(0.1f), Far(100.0f),
 	RotationSpeed(100.0f),
@@ -61,30 +62,60 @@ void Mesh::UpdateViewMatrix()
     ViewMatrix = glm::inverse(ViewMatrix);
 }
 
+void Mesh::UpdateModel()
+{
+	ModelMatrix = glm::mat4(1.0f);
+	//ModelMatrix = glm::translate(ModelMatrix, Origin);
+	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
+	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.y), glm::vec3(0.0f, -1.0f, 0.0f));
+	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(Rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+	//ModelMatrix = glm::translate(ModelMatrix, Position - Origin);
+	ModelMatrix = glm::scale(ModelMatrix, Scale);
+}
+
 void Mesh::Update(const ImVec2& screenSize)
 {
-    ModelShader->Bind();
-
-	// Position
-	Aspect = screenSize.x / screenSize.y;
-    UpdateViewMatrix();
-
-    ModelShader->SetMat4(glm::mat4(1.0f), "model");
-    ModelShader->SetMat4(ViewMatrix, "view");
-    ModelShader->SetMat4(glm::perspective(glm::radians<float>(static_cast<float>(Fov)), Aspect, Near, Far), "projection");
-    ModelShader->SetVec3(glm::vec3(0.0f, 0.0f, 3.0f), "camPos");
+	ModelShader->Bind();
 
 	// Light
-	ModelShader->SetVec3(LightPosition, "lightPosition");
-	ModelShader->SetVec3(glm::vec3(1.0f, 1.0f, 1.0f) * 1000.0f, "lightColor");
+	Light.SetPosition(LightPosition);
+	Light.SendToShader(*ModelShader);
 
-	// Texture
-	ModelShader->SetVec3(glm::vec3(0.3f, 0.3f, 0.3f), "albedo");
-	ModelShader->SetF1(0.2f, "roughness");
-	ModelShader->SetF1(0.1f, "metallic");
-	ModelShader->SetF1(1.0f, "ao");
+	// Camera
+	Aspect = screenSize.x / screenSize.y;
+	UpdateViewMatrix();
+    ModelShader->SetMat4(ViewMatrix, "ViewMatrix");
+    ModelShader->SetMat4(glm::perspective(glm::radians<float>(static_cast<float>(Fov)), Aspect, Near, Far), "ProjectionMatrix");
+    ModelShader->SetVec3(glm::vec3(0.0f, 0.0f, 3.0f), "cameraPos");
 
-    ModelShader->Unbind();
+	// Model
+	UpdateModel();
+    ModelShader->SetMat4(ModelMatrix, "ModelMatrix"); 
+
+	// Material
+	Material.SendToShader(*ModelShader);
+
+	ModelShader->Unbind();
+}
+
+void Mesh::OnMouseMove(const double& x, const double& y, const Button& button)
+{
+	const auto pos = glm::vec2(x, y);
+
+	if (button == Button::RIGHT)
+	{
+		const auto delta = (pos - CurrentPos) * 0.004f;
+		const auto temp = Rotation.y + delta.x * RotationSpeed;
+
+		if (temp >= 180)
+			Rotation.y = 180;
+		else if (temp <= -180)
+			Rotation.y = -180;
+		else
+			Rotation.y = temp;
+	}
+
+	CurrentPos = pos;
 }
 
 void Mesh::Reset()
@@ -96,24 +127,6 @@ void Mesh::Reset()
 	ResetRoll();
 	ResetFocus();
 	ResetLightPosition();
-}
-
-void Mesh::OnMouseMove(const double& x, const double& y, const Button& button)
-{
-	const auto pos = glm::vec2(x, y);
-
-	if (button == Button::RIGHT)
-	{
-		const auto delta = (pos - CurrentPos) * 0.004f;
-		const auto temp = Yaw + delta.x * RotationSpeed;
-
-		if (temp >= 180)
-			Yaw = 180;
-		else if (temp <= -180)
-			Yaw = -180;
-		else
-			Yaw = static_cast<int>(temp);
-	}
-
-	CurrentPos = pos;
+	ResetRotation();
+	ResetScale();
 }

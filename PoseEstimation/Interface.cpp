@@ -8,6 +8,7 @@ int main()
     try    
     {
         Run(Demo());
+        //Run(Gui());
     }
     catch(...)
     {
