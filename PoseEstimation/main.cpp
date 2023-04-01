@@ -7,10 +7,11 @@ int main()
 {
     try    
     {
-        auto a = Demo();
-        a.Render();
-        //Run(Demo());
-        //Run(Gui());
+        Demo gui;
+        gui.Render();
+
+		//Gui gui;
+    	//gui.Redner();
     }
     catch(...)
     {

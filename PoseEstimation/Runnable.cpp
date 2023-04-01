@@ -1,11 +1,6 @@
 #include "Runnable.hpp"
 #include "Config.hpp"
 
-void Run(Runnable& runnable)
-{
-    runnable.Render();
-}
-
 Runnable::Runnable() : Window(nullptr)
 {
     InitGlfw();

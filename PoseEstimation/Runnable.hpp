@@ -26,5 +26,3 @@ protected:
 	static void FrameBufferResizeCallback(GLFWwindow* window, int fbW, int fbH);
 	static void GLAPIENTRY GlMessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam);
 };
-
-void Run(const Runnable& runnable);

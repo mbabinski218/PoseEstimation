@@ -4,13 +4,6 @@
 
 class Model
 {
-	std::shared_ptr<Shader> MeshShader;
-	std::unique_ptr<FrameBuffer> Frame;
-
-	std::vector<Mesh> Meshes{};
-	std::map<std::string, BoneInfo> BoneInfoMap{};
-	int BoneCounter = 0 ;
-
 public:
 	explicit Model();
 	[[nodiscard]] void* GetTexture() const { return Frame->GetTexture(); }
@@ -20,4 +13,12 @@ public:
 	void Draw() const;
 	void Update(const ImVec2& screenSize);
 	void OnMouseMove(double x, double y, const Button& button) const {}
+
+private:
+	std::shared_ptr<Shader> MeshShader;
+	std::unique_ptr<FrameBuffer> Frame;
+
+	std::vector<Mesh> Meshes{};
+	std::map<std::string, BoneInfo> BoneInfoMap{};
+	int BoneCounter = 0;
 };
