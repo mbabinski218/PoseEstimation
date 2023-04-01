@@ -1,6 +1,6 @@
 #include "FrameBuffer.hpp"
 
-FrameBuffer::FrameBuffer(const int& width, const int& height) :
+FrameBuffer::FrameBuffer(const int width, const int height) :
 	FBO(0),
 	TextureId(0),
 	DepthId(0),
@@ -38,7 +38,7 @@ FrameBuffer::FrameBuffer(const int& width, const int& height) :
 
 FrameBuffer::~FrameBuffer()
 {
-    Clear();
+    //Clear();
 }
 
 void FrameBuffer::Bind() const

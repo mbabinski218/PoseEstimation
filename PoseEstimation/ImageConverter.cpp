@@ -2,7 +2,7 @@
 
 ImageConverter::ImageConverter() : Texture(0), Width(0), Height(0) { }
 
-void ImageConverter::LoadMat(const void* frameId, const int& width, const int& height)
+void ImageConverter::LoadMat(const void* frameId, const int width, const int height)
 {
 	if (Texture != 0)
 		return;
@@ -19,7 +19,7 @@ void ImageConverter::LoadMat(const void* frameId, const int& width, const int& h
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, frameId);
 }
 
-void ImageConverter::UpdateMat(const void* frameId, const int& width, const int& height)
+void ImageConverter::UpdateMat(const void* frameId, const int width, const int height)
 {
 	// if does not have the same size then i need to recreate the texture from scratch
 	if (Width != width || Height != height)

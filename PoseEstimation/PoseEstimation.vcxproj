@@ -104,13 +104,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\opencv\build\include;C:\Users\Mateusz\Desktop\opencv\build\include;glfw\include;imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\opencv\build\include;C:\Users\Mateusz\Desktop\opencv\build\include;glfw\include;imgui;$(SolutionDir)\PoseEstimation;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;glew32s.lib;opencv_world470d.lib;glfw3_mt.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;glew32s.lib;opencv_world470d.lib;glfw3_mt.lib;glfw3dll.lib;assimp/assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>D:\opencv\build\lib\Debug;D:\opencv\build\lib;C:\Users\Mateusz\Desktop\opencv\build\x64\vc16\lib;glfw\lib-vc2022;D:\glew-2.2.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -122,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>D:\opencv\build\include;glfw\include;imgui;glew;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\opencv\build\include;glfw\include;imgui;glew;$(SolutionDir)\PoseEstimation;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -130,11 +130,12 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;glew32s.lib;opencv_world470.lib;glfw3_mt.lib;glfw3dll.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>D:\opencv\build\lib\Release;glfw\lib-vc2022;D:\glew-2.2.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;glew32s.lib;opencv_world470.lib;glfw3_mt.lib;glfw3dll.lib;assimp/assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Demo.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Gui.cpp" />
@@ -149,18 +150,21 @@
     <ClCompile Include="Interface.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="ObjLoader.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="Loader.cpp" />
     <ClCompile Include="PoseEstimation.cpp" />
     <ClCompile Include="Runnable.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="VertexIndexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Bone.hpp" />
     <ClInclude Include="Demo.hpp" />
     <ClInclude Include="FrameBuffer.hpp" />
     <ClInclude Include="Input.hpp" />
     <ClInclude Include="LightPoint.hpp" />
     <ClInclude Include="Material.hpp" />
+    <ClInclude Include="Model.hpp" />
     <ClInclude Include="Runnable.hpp" />
     <ClInclude Include="Libs.hpp" />
     <ClInclude Include="Mesh.hpp" />
@@ -178,7 +182,7 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="Camera.hpp" />
     <ClInclude Include="KeyPoint.hpp" />
-    <ClInclude Include="ObjLoader.hpp" />
+    <ClInclude Include="Loader.hpp" />
     <ClInclude Include="PoseEstimation.hpp" />
     <ClInclude Include="Shader.hpp" />
     <ClInclude Include="Utility.hpp" />
@@ -186,8 +190,8 @@
     <ClInclude Include="VertexIndexBuffer.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="shaders\fragment.glsl" />
-    <None Include="shaders\vertex.glsl" />
+    <None Include="shaders\shader.frag" />
+    <None Include="shaders\shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

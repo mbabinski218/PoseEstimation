@@ -17,7 +17,7 @@ public:
 
 	void SetVec3(const glm::vec3& vec3, const std::string& name) const;
 	void SetMat4(const glm::mat4& mat4, const std::string& name) const;
-	void SetF1(const float& value, const std::string& name) const;
+	void SetF1(float value, const std::string& name) const;
 
 private:
 	std::string LoadShaderSource(const char* filePath) const;

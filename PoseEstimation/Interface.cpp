@@ -7,7 +7,9 @@ int main()
 {
     try    
     {
-        Run(Demo());
+        auto a = Demo();
+        a.Render();
+        //Run(Demo());
         //Run(Gui());
     }
     catch(...)

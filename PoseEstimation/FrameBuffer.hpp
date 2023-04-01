@@ -12,7 +12,7 @@ class FrameBuffer
 
 	// Methods
 public:
-    FrameBuffer(const int& width, const int& height);
+    FrameBuffer(int width, int height);
     ~FrameBuffer();
     void Bind() const;
 	void Unbind() const;

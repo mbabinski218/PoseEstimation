@@ -25,9 +25,11 @@ std::shared_ptr<cv::dnn::Net> PoseEstimation::CreateDnnNet(const std::string& pr
     return std::make_shared<cv::dnn::Net>(net);
 }
 
-PoseEstimation::PoseEstimation(std::shared_ptr<cv::dnn::Net> net, const ImVec2& size, const int& poseParts, 
-    const std::vector<std::vector<int>>& posePairs, const double& threshHold) : Net(std::move(net)),
-	Image(std::make_unique<ImageConverter>()), OutputBlob(std::make_unique<cv::Mat>()), PosePairs(posePairs),
+PoseEstimation::PoseEstimation(std::shared_ptr<cv::dnn::Net> net, const ImVec2& size, const int& poseParts,std::vector<std::vector<int>> posePairs, const double& threshHold) :
+	Net(std::move(net)),
+	Image(std::make_unique<ImageConverter>()),
+	OutputBlob(std::make_unique<cv::Mat>()),
+	PosePairs(std::move(posePairs)),
 	ThreshHold(threshHold), PoseParts(poseParts)
 {
     Size = cv::Size2f(size.x, size.y);
@@ -61,20 +63,18 @@ void PoseEstimation::AddPoseToImage(const std::unique_ptr<cv::Mat>& mat) const
 {
     const auto h = OutputBlob->size[2];
     const auto w = OutputBlob->size[3];
-
-    // find the position of the body parts
     std::vector<cv::Point> points(PoseParts);
+
     for (int n = 0; n < PoseParts; n++)
     {
-        // Probability map of corresponding body's part.
         cv::Mat probMap(h, w, CV_32F, OutputBlob->ptr(0, n));
         cv::Point2f p(-1, -1);
         cv::Point maxLoc;
-        double prob;
+        double maxVal;
 
-        minMaxLoc(probMap, 0, &prob, 0, &maxLoc);
+        minMaxLoc(probMap, 0, &maxVal, 0, &maxLoc);
 
-        if (prob > ThreshHold)
+        if (maxVal > ThreshHold)
         {
             p = maxLoc;
             p.x *= Size.width / w;
@@ -85,7 +85,6 @@ void PoseEstimation::AddPoseToImage(const std::unique_ptr<cv::Mat>& mat) const
 
     for (const auto& posePair : PosePairs)
     {
-        // lookup 2 connected body/hand parts
         cv::Point2f partA = points[posePair[0]];
         cv::Point2f partB = points[posePair[1]];
 

@@ -3,8 +3,7 @@
 #include "Mesh.hpp"
 #include "PoseEstimation.hpp"
 #include "Camera.hpp"
-#include "ImageConverter.hpp"
-#include "Input.hpp"
+#include "Model.hpp"
 
 class Gui : public Runnable
 {
@@ -14,9 +13,7 @@ class Gui : public Runnable
 	std::unique_ptr<Camera> BackCamera;
 	std::unique_ptr<PoseEstimation> FrontCameraEstimator;
 	std::unique_ptr<PoseEstimation> BackCameraEstimator;
-	std::unique_ptr<Mesh> Model;
 
-	ImVec2 Padding;
 	std::atomic<bool> FrontCameraCancellationToken;
 	std::atomic<bool> BackCameraCancellationToken;
 
@@ -32,7 +29,7 @@ public:
 	~Gui() override;
 
 private:
-	void Loop() const override;
+	void Loop() override;
 	void HandleInput() const override;
 
 	void InitCamera() const;

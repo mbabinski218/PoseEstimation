@@ -1,19 +1,22 @@
 #include "Runnable.hpp"
+#include "Config.hpp"
 
-void Run(const Runnable& runnable)
+void Run(Runnable& runnable)
 {
     runnable.Render();
 }
 
-Runnable::Runnable() : Window(nullptr), GuiConfig(Config::Get())
+Runnable::Runnable() : Window(nullptr)
 {
     InitGlfw();
     InitWindow();
     InitGlew();
     InitOpenGL();
+
+    Padding = ImGui::GetStyle().WindowPadding;
 }
 
-void Runnable::Render() const
+void Runnable::Render()
 {
     while (!glfwWindowShouldClose(Window))
     {
@@ -58,8 +61,8 @@ void Runnable::InitWindow()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_RESIZABLE, false);
 
-    Window = glfwCreateWindow(static_cast<int>(GuiConfig->WindowSize.x),
-        static_cast<int>(GuiConfig->WindowSize.y), GuiConfig->Title, nullptr, nullptr);
+    Window = glfwCreateWindow(static_cast<int>(Config::WindowSize.x),
+        static_cast<int>(Config::WindowSize.y), Config::Title, nullptr, nullptr);
 
     if (Window == nullptr)
         throw std::exception("Gui window init failed");
@@ -86,7 +89,7 @@ void Runnable::InitOpenGL() const
     ImGuiIO& io = ImGui::GetIO();
 
     // Setup ImGui font
-    const auto path = std::filesystem::current_path().string() + GuiConfig->FontPath;
+    const auto path = std::filesystem::current_path().string() + Config::FontPath;
     io.FontDefault = io.Fonts->AddFontFromFileTTF(path.c_str(), 14.0f);
 
     // Setup ImGui style
@@ -98,7 +101,7 @@ void Runnable::InitOpenGL() const
 
     // Setup Platform/Renderer backends
     ImGui_ImplGlfw_InitForOpenGL(Window, true);
-    ImGui_ImplOpenGL3_Init(GuiConfig->GlslVersion);
+    ImGui_ImplOpenGL3_Init(Config::GlslVersion);
 
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_DEPTH_TEST);

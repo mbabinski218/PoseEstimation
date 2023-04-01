@@ -1,21 +1,20 @@
 #pragma once
 #include "Libs.hpp"
-#include "Config.hpp"
 
 class Runnable
 {
 protected:
 	GLFWwindow* Window;
-	std::shared_ptr<Config> GuiConfig;
+	ImVec2 Padding;
 
 public:
-	void Render() const;
+	void Render();
 	virtual ~Runnable() = default;
 
 protected:
 	Runnable();
 
-	virtual void Loop() const = 0;
+	virtual void Loop() = 0;
 	virtual void HandleInput() const = 0;
 	void InitGlfw() const;
 	void InitWindow();

@@ -11,7 +11,7 @@ VertexIndexBuffer::VertexIndexBuffer(const std::vector<Vertex>& vertices, const 
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 	
-	// Create VBO	
+	// Create VBO
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, VerticesCount * sizeof(Vertex), vertices.data(), GL_STATIC_DRAW);
@@ -36,6 +36,12 @@ VertexIndexBuffer::VertexIndexBuffer(const std::vector<Vertex>& vertices, const 
 	// Color
 	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, Color)));
 	glEnableVertexAttribArray(3);
+	// Ids
+	glVertexAttribIPointer(4, 4, GL_INT, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, BoneIds)));
+	glEnableVertexAttribArray(4);
+	// Weights
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), reinterpret_cast<void*>(offsetof(Vertex, Weights)));
+	glEnableVertexAttribArray(5);
 
 	// BIND VAO 0
 	glBindVertexArray(0);

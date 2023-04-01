@@ -3,22 +3,18 @@
 // Methods
 Gui::Gui() : Runnable(), FrontCameraCancellationToken(false), BackCameraCancellationToken(false)
 {
-    FrontCamera = std::make_unique<Camera>(GuiConfig->FrontCameraLinker, GuiConfig->FrontCameraSize, GuiConfig->CameraApi);
+    FrontCamera = std::make_unique<Camera>(Config::FrontCameraLinker, Config::FrontCameraSize, Config::CameraApi);
     //BackCamera = std::make_unique<Camera>(config->BackCameraLinker, config->BackCameraSize, config->CameraApi);
 
-    Net = PoseEstimation::CreateDnnNet(GuiConfig->ProtoTextPath, GuiConfig->CaffeModel, GuiConfig->DnnMode);
-    FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, GuiConfig->FrontCameraSize, GuiConfig->PoseParts, GuiConfig->PosePairs, GuiConfig->ThreshHold);
-    BackCameraEstimator = std::make_unique<PoseEstimation>(Net, GuiConfig->BackCameraSize, GuiConfig->PoseParts, GuiConfig->PosePairs, GuiConfig->ThreshHold);
-
-    Model = std::make_unique<Mesh>(GuiConfig->ModelObjPath, GuiConfig->VertexCorePath, GuiConfig->FragmentCorePath);
-
-    Padding = ImGui::GetStyle().WindowPadding;
+    Net = PoseEstimation::CreateDnnNet(Config::ProtoTextPath, Config::CaffeModel, Config::DnnMode);
+    FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, Config::FrontCameraSize, Config::PoseParts, Config::PosePairs, Config::ThreshHold);
+    BackCameraEstimator = std::make_unique<PoseEstimation>(Net, Config::BackCameraSize, Config::PoseParts, Config::PosePairs, Config::ThreshHold);
 
     InitCamera();
 }
 
 // Inside GUI render loop
-void Gui::Loop() const
+void Gui::Loop()
 {
     //ImGui::ShowDemoWindow();
 
@@ -34,12 +30,12 @@ void Gui::Loop() const
     if (ShowPoseEstimation)
     {
         FrontCameraEstimator->Update(FrontCamera->GetMat());
-	    ImGui::Image(FrontCameraEstimator->GetTexture(), GuiConfig->FrontCameraSize);
+	    ImGui::Image(FrontCameraEstimator->GetTexture(), Config::FrontCameraSize);
     }
     else    
     {        
 		FrontCamera->UpdateImage(); 
-	    ImGui::Image(FrontCamera->GetTexture(), GuiConfig->FrontCameraSize);
+	    ImGui::Image(FrontCamera->GetTexture(), Config::FrontCameraSize);
     }
     ImGui::End();
 
@@ -48,12 +44,12 @@ void Gui::Loop() const
   //  if(ShowPoseEstimation)
   //  {
   //      BackCameraEstimator->Update(BackCamera->GetMat());
-		//ImGui::Image(BackCameraEstimator->GetTexture(), GuiConfig->BackCameraSize);
+		//ImGui::Image(BackCameraEstimator->GetTexture(), Config::BackCameraSize);
   //  }
   //  else
   //  {        
 		//BackCamera->UpdateImage();
-		//ImGui::Image(BackCamera->GetTexture(), GuiConfig->BackCameraSize);
+		//ImGui::Image(BackCamera->GetTexture(), Config::BackCameraSize);
   //  }
   //  ImGui::End();
 
@@ -62,10 +58,7 @@ void Gui::Loop() const
     {
 		ImGui::Begin("3D model");
 
-        const auto windowSize = ImGui::GetWindowSize();        
-        Model->Update(windowSize);
-        Model->Render();
-        ImGui::Image(Model->GetTexture(), ImVec2(windowSize.x - 2.0f * Padding.x, windowSize.y - 4.5f * Padding.y));
+    
 
 		ImGui::End();
     }
@@ -73,32 +66,32 @@ void Gui::Loop() const
     // 3d model controls window
     if (Show3dModelControls)
     {
-        ImGui::Begin("3D model controls");
+        //ImGui::Begin("3D model controls");
 
-        ImGui::SliderInt("Fov", Model->FovPtr(), 20, 90);
-        ImGui::SliderInt("Pitch", Model->PitchPtr(), -180, 180);
-        ImGui::SliderInt("Yaw", Model->YawPtr(), -180, 180);
-        ImGui::SliderInt("Roll", Model->RollPtr(), -180, 180);
-        ImGui::SliderFloat("Distance", Model->DistancePtr(), 0.0f, 30.0f);
-        ImGui::SliderFloat3("Focus", Model->FocusPtr(), -2.0f, 2.0f);
-        ImGui::SliderFloat3("Light position", Model->LightPositionPtr(), -20.0f, 20.0f);
+        //ImGui::SliderInt("Fov", Model->FovPtr(), 20, 90);
+        //ImGui::SliderInt("Pitch", Model->PitchPtr(), -180, 180);
+        //ImGui::SliderInt("Yaw", Model->YawPtr(), -180, 180);
+        //ImGui::SliderInt("Roll", Model->RollPtr(), -180, 180);
+        //ImGui::SliderFloat("Distance", Model->DistancePtr(), 0.0f, 30.0f);
+        //ImGui::SliderFloat3("Focus", Model->FocusPtr(), -2.0f, 2.0f);
+        //ImGui::SliderFloat3("Light position", Model->LightPositionPtr(), -20.0f, 20.0f);
 
-        ImGui::Spacing();
-        if (ImGui::Button("Reset"))
-            Model->Reset();
+        //ImGui::Spacing();
+        //if (ImGui::Button("Reset"))
+        //    Model.SetToDefault();
 
-        ImGui::End();
+        //ImGui::End();
     }
 }
 
 void Gui::HandleInput() const
 {
-    double x, y;
-    glfwGetCursorPos(Window, &x, &y);
+  //  double x, y;
+  //  glfwGetCursorPos(Window, &x, &y);
 
-    // Model input
-    if(Show3dModel)
-		Model->OnMouseMove(x, y, Input::GetPressedButton(Window));
+  //  // Model input
+  //  if(Show3dModel)
+		//Model->OnMouseMove(x, y, Input::GetPressedButton(Window));
 }
 
 void Gui::InitCamera() const

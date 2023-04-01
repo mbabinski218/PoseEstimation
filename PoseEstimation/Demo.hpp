@@ -1,13 +1,13 @@
 #pragma once
 #include "Runnable.hpp"
-#include "Mesh.hpp"
+#include "Model.hpp"
 
-class Demo : public Runnable
+class Demo final : public Runnable
 {
 	// Variables
-	std::unique_ptr<Mesh> Model;
+	std::unique_ptr<std::vector<Model>> Models;
 
-	ImVec2 Padding;
+	Model DefaultModel;
 
 	inline static bool Show3dModel = true;
 	inline static bool Show3dModelControls = true;
@@ -18,6 +18,6 @@ public:
 	~Demo() override;
 
 private:
-	void Loop() const override;
+	void Loop() override;
 	void HandleInput() const override;
 };

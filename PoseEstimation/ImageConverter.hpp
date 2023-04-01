@@ -11,9 +11,9 @@ class ImageConverter
 public:
 	// Methods
 	ImageConverter();
-	void LoadMat(const void* frameId, const int& width, const int& height);
+	void LoadMat(const void* frameId, int width, int height);
 	void LoadMat(const cv::Mat& frame);
-	void UpdateMat(const void* frameId, const int& width, const int& height);
+	void UpdateMat(const void* frameId, int width, int height);
 	void UpdateMat(const cv::Mat& frame);
 	void* GetTexture() const;
 	void Clear();

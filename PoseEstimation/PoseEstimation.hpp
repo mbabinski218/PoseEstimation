@@ -17,8 +17,7 @@ class PoseEstimation
 
 	// Methods
 public:
-	explicit PoseEstimation(std::shared_ptr<cv::dnn::Net> net, const ImVec2& size, const int& poseParts, 
-		const std::vector<std::vector<int>>& posePairs, const double& threshHold);
+	explicit PoseEstimation(std::shared_ptr<cv::dnn::Net> net, const ImVec2& size, const int& poseParts, std::vector<std::vector<int>> posePairs, const double& threshHold);
 	void Update(const std::unique_ptr<cv::Mat>& mat) const;
 	void* GetTexture() const;
 
