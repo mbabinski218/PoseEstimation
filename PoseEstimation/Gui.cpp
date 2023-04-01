@@ -1,131 +1,118 @@
 #include "Gui.hpp"
 
 // Methods
-Gui::Gui(const std::shared_ptr<Config>& config) : GuiConfig(config)
+Gui::Gui() : Runnable(), FrontCameraCancellationToken(false), BackCameraCancellationToken(false)
 {
-    FrontCamera = std::make_unique<Camera>(config->FrontCameraLinker, config->FrontCameraSize, config->CameraApi);
-    BackCamera = std::make_unique<Camera>(config->BackCameraLinker, config->BackCameraSize, config->CameraApi);
-    PoseEstimator = std::make_unique<PoseEstimation>(config->ProtoTextPath, config->CaffeModel, config->DnnMode);
-}
+    FrontCamera = std::make_unique<Camera>(Config::FrontCameraLinker, Config::FrontCameraSize, Config::CameraApi);
+    //BackCamera = std::make_unique<Camera>(config->BackCameraLinker, config->BackCameraSize, config->CameraApi);
 
-// Before GUI render loop
-void Gui::Init() const
-{
-    if (!FrontCamera->OpenCamera())
-        throw std::exception("Front camera error");
-    if (!BackCamera->OpenCamera())
-        throw std::exception("Back camera error");
+    Net = PoseEstimation::CreateDnnNet(Config::ProtoTextPath, Config::CaffeModel, Config::DnnMode);
+    FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, Config::FrontCameraSize, Config::PoseParts, Config::PosePairs, Config::ThreshHold);
+    BackCameraEstimator = std::make_unique<PoseEstimation>(Net, Config::BackCameraSize, Config::PoseParts, Config::PosePairs, Config::ThreshHold);
 
-    FrontCamera->SetUpdateCameraThread(FrontCameraUpdateThread);
-    BackCamera->SetUpdateCameraThread(BackCameraUpdateThread);
-
-    PoseEstimator->Create(FrontCamera->GetMat());
+    InitCamera();
 }
 
 // Inside GUI render loop
-void Gui::Loop() const
+void Gui::Loop()
 {
     //ImGui::ShowDemoWindow();
 
     // Debug window
 	ImGui::Text("%.1f FPS", static_cast<double>(ImGui::GetIO().Framerate));
     ImGui::Spacing();
-    ImGui::Checkbox("Show pose estimation", &ShowPoseEstimation);
+    ImGui::Checkbox("Pose estimation", &ShowPoseEstimation);
+    ImGui::Checkbox("3D model", &Show3dModel);
+    ImGui::Checkbox("3D model controls", &Show3dModelControls);
 
     // Front camera window
 	ImGui::Begin("Front camera");
-    FrontCamera->UpdateImage();
     if (ShowPoseEstimation)
     {
-        PoseEstimator->Update(FrontCamera->GetMat());
-	    ImGui::Image(PoseEstimator->GetTexture(), GuiConfig->FrontCameraSize);
+        FrontCameraEstimator->Update(FrontCamera->GetMat());
+	    ImGui::Image(FrontCameraEstimator->GetTexture(), Config::FrontCameraSize);
     }
     else    
     {        
-	    ImGui::Image(FrontCamera->GetTexture(), GuiConfig->FrontCameraSize);
+		FrontCamera->UpdateImage(); 
+	    ImGui::Image(FrontCamera->GetTexture(), Config::FrontCameraSize);
     }
     ImGui::End();
 
 	// Back camera window
-    ImGui::Begin("Back camera");
-    BackCamera->UpdateImage();
-    if(ShowPoseEstimation)
+  //  ImGui::Begin("Back camera");
+  //  if(ShowPoseEstimation)
+  //  {
+  //      BackCameraEstimator->Update(BackCamera->GetMat());
+		//ImGui::Image(BackCameraEstimator->GetTexture(), Config::BackCameraSize);
+  //  }
+  //  else
+  //  {        
+		//BackCamera->UpdateImage();
+		//ImGui::Image(BackCamera->GetTexture(), Config::BackCameraSize);
+  //  }
+  //  ImGui::End();
+
+    // 3d model window
+    if (Show3dModel)
     {
-        PoseEstimator->Update(BackCamera->GetMat());
-		ImGui::Image(PoseEstimator->GetTexture(), GuiConfig->BackCameraSize);
+		ImGui::Begin("3D model");
+
+    
+
+		ImGui::End();
     }
-    else
-    {        
-		ImGui::Image(BackCamera->GetTexture(), GuiConfig->BackCameraSize);
+
+    // 3d model controls window
+    if (Show3dModelControls)
+    {
+        //ImGui::Begin("3D model controls");
+
+        //ImGui::SliderInt("Fov", Model->FovPtr(), 20, 90);
+        //ImGui::SliderInt("Pitch", Model->PitchPtr(), -180, 180);
+        //ImGui::SliderInt("Yaw", Model->YawPtr(), -180, 180);
+        //ImGui::SliderInt("Roll", Model->RollPtr(), -180, 180);
+        //ImGui::SliderFloat("Distance", Model->DistancePtr(), 0.0f, 30.0f);
+        //ImGui::SliderFloat3("Focus", Model->FocusPtr(), -2.0f, 2.0f);
+        //ImGui::SliderFloat3("Light position", Model->LightPositionPtr(), -20.0f, 20.0f);
+
+        //ImGui::Spacing();
+        //if (ImGui::Button("Reset"))
+        //    Model.SetToDefault();
+
+        //ImGui::End();
     }
-    ImGui::End();
 }
 
-static void GlfwErrorCallback(int error, const char* description)
+void Gui::HandleInput() const
 {
-    fprintf(stderr, "GLFW Error %d: %s\n", error, description);
+  //  double x, y;
+  //  glfwGetCursorPos(Window, &x, &y);
+
+  //  // Model input
+  //  if(Show3dModel)
+		//Model->OnMouseMove(x, y, Input::GetPressedButton(Window));
 }
 
-void Gui::Render() const
+void Gui::InitCamera() const
 {
-    glfwSetErrorCallback(GlfwErrorCallback);
-    if (!glfwInit())
-        throw std::exception("GLFW init failed");
+    if (!FrontCamera->OpenCamera())
+        throw std::exception("Front camera error");
+    //if (!BackCamera->OpenCamera())
+    //    throw std::exception("Back camera error");
 
-    // Create window with graphics context
-    GLFWwindow* window = glfwCreateWindow(static_cast<int>(GuiConfig->WindowSize.x), 
-        static_cast<int>(GuiConfig->WindowSize.y), GuiConfig->Title, nullptr, nullptr);
-    if (window == nullptr)
-        throw std::exception("Gui window error");
-    glfwMakeContextCurrent(window);
-    glfwSwapInterval(1);
+    FrontCamera->SetUpdateCameraThread(FrontCameraUpdateThread, FrontCameraCancellationToken);
+    /*BackCamera->SetUpdateCameraThread(BackCameraUpdateThread, BackCameraCancellationToken);*/
+}
 
-    // Setup ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-	(void)io;
+void Gui::ShutdownCamera()
+{
+    FrontCameraCancellationToken = true;
+    //BackCameraCancellationToken = true;
+}
 
-    // Setup ImGui style
-    ImGui::StyleColorsDark();
-
-    // Setup Platform/Renderer backends
-    ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init(GuiConfig->GlslVersion);
-
-    constexpr auto clearColor = ImVec4(0.10f, 0.10f, 0.10f, 1.0f);
-
-    // Init
-    Init();
-
-    while (!glfwWindowShouldClose(window))
-    {
-        glfwPollEvents();
-
-        // Start the ImGui frame
-        ImGui_ImplOpenGL3_NewFrame();
-        ImGui_ImplGlfw_NewFrame();
-        ImGui::NewFrame();
-
-        // Interface
-        Loop();
-
-        // Rendering
-        ImGui::Render();
-        int displayW, displayH;
-        glfwGetFramebufferSize(window, &displayW, &displayH);
-        glViewport(0, 0, displayW, displayH);
-        glClearColor(clearColor.x * clearColor.w, clearColor.y * clearColor.w, clearColor.z * clearColor.w, clearColor.w);
-        glClear(GL_COLOR_BUFFER_BIT);
-        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-        glfwSwapBuffers(window);
-    }
-
-    // Cleanup
-    ImGui_ImplOpenGL3_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
-    glfwDestroyWindow(window);
-    glfwTerminate();
+Gui::~Gui()
+{
+    ShutdownCamera();
+    Shutdown();
 }

@@ -1,6 +1,5 @@
 #pragma once
-
-#include <opencv2/core/types.hpp>
+#include "Libs.hpp"
 
 struct KeyPoint
 {
@@ -8,7 +7,7 @@ struct KeyPoint
 	cv::Point Point;
 	float Probability;
 
-	KeyPoint(const cv::Point point, const float probability)
+	KeyPoint(const cv::Point& point, const float& probability)
 	{
 		Id = -1;
 		Point = point;
