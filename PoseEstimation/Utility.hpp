@@ -1,6 +1,7 @@
 #pragma once
 #include <assimp/matrix4x4.h>
 #include <assimp/quaternion.h>
+#include "Bone.hpp"
 
 enum DnnTargetMode
 {
@@ -35,8 +36,30 @@ public:
 		return {vec.x, vec.y, vec.z};
 	}
 
-	static glm::quat ToGlmQuat(const aiQuaternion& pOrientation)
+	static glm::quat ToGlmQuat(const aiQuaternion& quat)
 	{
-		return {pOrientation.w, pOrientation.x, pOrientation.y, pOrientation.z};
+		return {quat.w, quat.x, quat.y, quat.z};
+	}
+
+	static std::string ToString(const BoneType boneType)
+	{
+		switch(boneType)
+		{
+		case HEAD:			return "Head";
+		case NECK:			return "Neck";
+		case RIGHT_ARM:		return "RightArm";
+		case RIGHT_FOREARM: return "RightForeArm";
+		case RIGHT_HAND:	return "RightHand";
+		case LEFT_ARM:		return "LeftArm";
+		case LEFT_FOREARM:  return "LeftForeArm";
+		case LEFT_HAND:		return "LeftHand";
+		case RIGHT_UP_LEG:  return "RightUpLeg";
+		case RIGHT_LEG:		return "RightLeg";
+		case RIGHT_FOOT:	return "RightFoot";
+		case LEFT_UP_LEG:	return "LeftUpLeg";
+		case LEFT_LEG:		return "LeftLeg";
+		case LEFT_FOOT:		return "LeftFoot";
+		}
+		throw std::exception("Bone mapping error");
 	}
 };

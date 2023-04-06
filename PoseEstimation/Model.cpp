@@ -1,30 +1,32 @@
 #include "Model.hpp"
 
-Model::Model() :
-	MeshShader(std::make_shared<Shader>(Config::VertexCorePath, Config::FragmentCorePath)),
-	Frame(std::make_unique<FrameBuffer>(1280, 720))
-{
-
-}
-
 void Model::Draw() const
 {
-	MeshShader->Bind();
-	Frame->Bind();
-
 	for(const auto& mesh : Meshes)
 		mesh.Draw();
-
-	Frame->Unbind();
-	MeshShader->Unbind();
 }
 
-void Model::Update(const ImVec2& screenSize)
+void Model::Update(const float deltaTime)
 {
-	MeshShader->Bind();
+	UpdateModel();
+	ModelAnimator.Update(deltaTime);
+}
 
-	for (auto& mesh : Meshes)
-		mesh.Update(screenSize, MeshShader);
+void Model::SendToShader(const Shader& shader)
+{
+	shader.SetI1(Config::MaxBoneInfluence, "MaxBoneInfluence");
+	shader.SetMat4(ModelMatrix, "ModelMatrix");
 
-	MeshShader->Unbind();
+	const auto transforms = ModelAnimator.GetFinalBoneMatrices();
+	for (size_t i = 0; i < transforms.size(); ++i)
+		shader.SetMat4(transforms[i], "FinalBonesMatrices[" + std::to_string(i) + "]");
+}
+
+void Model::UpdateModel()
+{
+	ModelMatrix = glm::mat4(1.0f);
+	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+	ModelMatrix = glm::rotate(ModelMatrix, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	ModelMatrix = glm::scale(glm::vec3(1.0f));
 }

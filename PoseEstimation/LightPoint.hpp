@@ -1,5 +1,6 @@
 #pragma once
 #include "Libs.hpp"
+#include "Shader.hpp"
 
 struct LightPoint
 {

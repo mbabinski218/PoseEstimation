@@ -12,7 +12,7 @@ class PoseEstimation
 
 	std::vector<std::vector<int>> PosePairs;
 	double ThreshHold;
-	cv::Size2f Size;
+	cv::Size2f CameraSize;
 	int PoseParts;
 
 	// Methods

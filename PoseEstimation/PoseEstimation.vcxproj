@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Demo.cpp" />
@@ -150,15 +151,16 @@
     <ClCompile Include="imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="Loader.cpp" />
     <ClCompile Include="PoseEstimation.cpp" />
     <ClCompile Include="Runnable.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="VertexIndexBuffer.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Animation.hpp" />
     <ClInclude Include="Animator.hpp" />
     <ClInclude Include="Bone.hpp" />
     <ClInclude Include="Demo.hpp" />
@@ -190,6 +192,7 @@
     <ClInclude Include="Utility.hpp" />
     <ClInclude Include="Vertex.hpp" />
     <ClInclude Include="VertexIndexBuffer.hpp" />
+    <ClInclude Include="World.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader.frag" />

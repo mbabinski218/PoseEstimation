@@ -78,9 +78,6 @@
     <ClCompile Include="ImageConverter.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Mesh.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
@@ -91,9 +88,6 @@
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="PoseEstimation.cpp">
-      <Filter>Source Files\Estimation</Filter>
-    </ClCompile>
-    <ClCompile Include="Bone.cpp">
       <Filter>Source Files\Estimation</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
@@ -110,6 +104,15 @@
     </ClCompile>
     <ClCompile Include="Runnable.cpp">
       <Filter>Source Files\Gui</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Bone.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -153,9 +156,6 @@
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="PoseEstimation.hpp">
-      <Filter>Header Files\Estimation</Filter>
-    </ClInclude>
-    <ClInclude Include="Bone.hpp">
       <Filter>Header Files\Estimation</Filter>
     </ClInclude>
     <ClInclude Include="Model.hpp">
@@ -205,6 +205,15 @@
     </ClInclude>
     <ClInclude Include="Utility.hpp">
       <Filter>Header Files\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.hpp">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Bone.hpp">
+      <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="World.hpp">
+      <Filter>Header Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

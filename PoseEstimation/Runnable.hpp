@@ -15,7 +15,7 @@ protected:
 	Runnable();
 
 	virtual void Loop() = 0;
-	virtual void HandleInput() const = 0;
+	virtual void HandleInput() = 0;
 	void InitGlfw() const;
 	void InitWindow();
 	void InitGlew() const;

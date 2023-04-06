@@ -1,24 +1,32 @@
 #pragma once
 #include "Mesh.hpp"
 #include "Bone.hpp"
+#include "Shader.hpp"
+#include "Animator.hpp"
 
 class Model
 {
 public:
-	explicit Model();
-	[[nodiscard]] void* GetTexture() const { return Frame->GetTexture(); }
-	[[nodiscard]] std::vector<Mesh>& GetMeshes() { return Meshes; }
-	[[nodiscard]] std::map<std::string, BoneInfo>& GetBoneInfoMap() { return BoneInfoMap; }
-	[[nodiscard]] int& GetBoneCounter() { return BoneCounter; }
+	explicit Model(const int id) : ModelMatrix({1.0f}), Id(id) {}
+
 	void Draw() const;
-	void Update(const ImVec2& screenSize);
-	void OnMouseMove(double x, double y, const Button& button) const {}
+	void Update(float deltaTime);
+	void SendToShader(const Shader& shader);
+	void Animate(const std::shared_ptr<Animation>& animation) { ModelAnimator.Play(animation); }
+
+	[[nodiscard]] int GetId() const { return Id; }
+	[[nodiscard]] std::vector<Mesh>& GetMeshes() { return Meshes; }
+	[[nodiscard]] int& GetBoneCounter() { return BoneCounter; }
+	[[nodiscard]] std::map<std::string, BoneInfo>& GetBoneInfoMap() { return BoneInfoMap; }
 
 private:
-	std::shared_ptr<Shader> MeshShader;
-	std::unique_ptr<FrameBuffer> Frame;
+	void UpdateModel();
 
+	Animator ModelAnimator{};
 	std::vector<Mesh> Meshes{};
+
+	glm::mat4 ModelMatrix{};
 	std::map<std::string, BoneInfo> BoneInfoMap{};
 	int BoneCounter = 0;
+	int Id = -1;
 };

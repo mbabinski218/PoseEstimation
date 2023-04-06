@@ -1,13 +1,13 @@
 #pragma once
 #include "Runnable.hpp"
-#include "Model.hpp"
+#include "World.hpp"
 
 class Demo final : public Runnable
 {
 	// Variables
-	std::unique_ptr<std::vector<Model>> Models;
-
-	Model DefaultModel;
+	World DemoWorld{};
+	float DeltaTime = 0.0f;
+	float LastFrame = 0.0f;
 
 	inline static bool Show3dModel = true;
 	inline static bool Show3dModelControls = true;
@@ -19,5 +19,5 @@ public:
 
 private:
 	void Loop() override;
-	void HandleInput() const override;
+	void HandleInput() override;
 };
