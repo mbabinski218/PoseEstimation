@@ -32,7 +32,7 @@ PoseEstimation::PoseEstimation(std::shared_ptr<cv::dnn::Net> net, const ImVec2& 
 	PosePairs(std::move(posePairs)),
 	ThreshHold(threshHold), PoseParts(poseParts)
 {
-    Size = cv::Size2f(size.x, size.y);
+    CameraSize = cv::Size2f(size.x, size.y);
 }
 
 void PoseEstimation::FindPose(const std::unique_ptr<cv::Mat>& mat) const
@@ -61,24 +61,24 @@ void* PoseEstimation::GetTexture() const
 
 void PoseEstimation::AddPoseToImage(const std::unique_ptr<cv::Mat>& mat) const
 {
-    const auto h = OutputBlob->size[2];
-    const auto w = OutputBlob->size[3];
+    const auto height = OutputBlob->size[2];
+    const auto width = OutputBlob->size[3];
     std::vector<cv::Point> points(PoseParts);
 
     for (int n = 0; n < PoseParts; n++)
     {
-        cv::Mat probMap(h, w, CV_32F, OutputBlob->ptr(0, n));
+        cv::Mat probMap(height, width, CV_32F, OutputBlob->ptr(0, n));
         cv::Point2f p(-1, -1);
         cv::Point maxLoc;
         double maxVal;
 
-        minMaxLoc(probMap, 0, &maxVal, 0, &maxLoc);
+        minMaxLoc(probMap, nullptr, &maxVal, nullptr, &maxLoc);
 
         if (maxVal > ThreshHold)
         {
             p = maxLoc;
-            p.x *= Size.width / w;
-            p.y *= Size.height / h;
+            p.x *= CameraSize.width / static_cast<float>(width);
+            p.y *= CameraSize.height / static_cast<float>(height);
         }
         points[n] = p;
     }

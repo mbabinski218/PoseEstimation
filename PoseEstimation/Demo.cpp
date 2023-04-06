@@ -1,17 +1,28 @@
 #include "Demo.hpp"
-#include "Config.hpp"
+
 #include "Loader.hpp"
+#include "Model.hpp"
 
 // Methods
 Demo::Demo() : Runnable()
 {
-    Loader::LoadModel(Config::ModelObjPath, DefaultModel);
+    DemoWorld.AddModel(1);
+    DemoWorld.AddModel(2);
+
+    auto model = DemoWorld.GetModel(1);
+    Loader::LoadModel(Config::ModelObjPath, *model);
+	model->Animate(Animation::Create(model->GetBoneInfoMap()));
 }
 
 // Inside GUI render loop
 void Demo::Loop()
 {
     //ImGui::ShowDemoWindow();
+
+    // DeltaTime
+    const auto currentFrame = static_cast<float>(glfwGetTime());
+    DeltaTime = currentFrame - LastFrame;
+    LastFrame = currentFrame;
 
     // Debug window
     ImGui::Text("%.1f FPS", static_cast<double>(ImGui::GetIO().Framerate));
@@ -25,9 +36,9 @@ void Demo::Loop()
         ImGui::Begin("3D model");
 
         const auto windowSize = ImGui::GetWindowSize();
-        DefaultModel.Update(windowSize);
-        DefaultModel.Draw();
-        ImGui::Image(DefaultModel.GetTexture(), ImVec2(windowSize.x - 2.0f * Padding.x, windowSize.y - 4.5f * Padding.y));
+        DemoWorld.Update(windowSize, DeltaTime);
+        DemoWorld.Draw();
+        ImGui::Image(DemoWorld.GetTexture(), ImVec2(windowSize.x - 2.0f * Padding.x, windowSize.y - 4.5f * Padding.y));
 
         ImGui::End();
     }
@@ -67,14 +78,14 @@ void Demo::Loop()
     //}
 }
 
-void Demo::HandleInput() const
+void Demo::HandleInput()
 {
     double x, y;
     glfwGetCursorPos(Window, &x, &y);
 
     // Model input
     if (Show3dModel)
-        DefaultModel.OnMouseMove(x, y, Input::GetPressedButton(Window));
+        DemoWorld.GetView()->OnMouseMove(x, y, Input::GetPressedButton(Window));
 }
 
 Demo::~Demo()

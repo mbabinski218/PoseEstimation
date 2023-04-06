@@ -1,5 +1,6 @@
 #pragma once
 #include "Libs.hpp"
+#include "Shader.hpp"
 
 struct LightPoint
 {
@@ -10,7 +11,7 @@ struct LightPoint
 	float Linear;
 	float Quadratic;
 
-	explicit LightPoint(const glm::vec3& position = glm::vec3(0.0f),
+	explicit LightPoint(const glm::vec3& position = { 3.0f, 2.0f, 7.0f },
 	                    const float intensity = 1.0f, 
 	                    const glm::vec3& color = glm::vec3(1.0f),
 	                    const float constant = 1.0f, 

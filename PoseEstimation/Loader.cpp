@@ -117,7 +117,7 @@ void Loader::ExtractBoneWeight(Model& model, std::vector<Vertex>& vertices, cons
 
         if (!boneInfoMap.contains(boneName))
         {
-            BoneInfo newBoneInfo;
+            BoneInfo newBoneInfo{};
             newBoneInfo.Id = boneCounter;
             newBoneInfo.Offset = Converter::ToGlmMatrix(mesh->mBones[boneIndex]->mOffsetMatrix);
             boneInfoMap[boneName] = newBoneInfo;
