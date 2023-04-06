@@ -7,6 +7,7 @@
 Demo::Demo() : Runnable()
 {
     DemoWorld.AddModel(1);
+    DemoWorld.AddModel(2);
 
     auto model = DemoWorld.GetModel(1);
     Loader::LoadModel(Config::ModelObjPath, *model);
@@ -84,7 +85,7 @@ void Demo::HandleInput()
 
     // Model input
     if (Show3dModel)
-        DemoWorld.OnMouseMove(x, y, Input::GetPressedButton(Window));
+        DemoWorld.GetView()->OnMouseMove(x, y, Input::GetPressedButton(Window));
 }
 
 Demo::~Demo()

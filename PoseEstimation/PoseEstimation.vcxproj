@@ -157,6 +157,7 @@
     <ClCompile Include="Runnable.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="VertexIndexBuffer.cpp" />
+    <ClCompile Include="View.cpp" />
     <ClCompile Include="World.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -192,6 +193,7 @@
     <ClInclude Include="Utility.hpp" />
     <ClInclude Include="Vertex.hpp" />
     <ClInclude Include="VertexIndexBuffer.hpp" />
+    <ClInclude Include="View.hpp" />
     <ClInclude Include="World.hpp" />
   </ItemGroup>
   <ItemGroup>
