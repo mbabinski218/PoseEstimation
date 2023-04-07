@@ -6,15 +6,37 @@
 // Methods
 Demo::Demo() : Runnable()
 {
+    auto map = std::map<BoneType, cv::Point2f>{};
+
+	map.try_emplace(HEAD, cv::Point2f(0,0));
+	map.try_emplace(NECK, cv::Point2f(0,0));
+	map.try_emplace(RIGHT_ARM, cv::Point2f(0,0));
+	map.try_emplace(RIGHT_FOREARM, cv::Point2f(0,0));
+	map.try_emplace(RIGHT_HAND, cv::Point2f(0,0));
+	map.try_emplace(LEFT_ARM, cv::Point2f(0,0));
+	map.try_emplace(LEFT_FOREARM, cv::Point2f(0,0));
+	map.try_emplace(LEFT_HAND, cv::Point2f(0,0));
+	map.try_emplace(RIGHT_UP_LEG, cv::Point2f(0,0));
+	map.try_emplace(RIGHT_LEG, cv::Point2f(0,0));
+	map.try_emplace(RIGHT_FOOT, cv::Point2f(0,0));
+	map.try_emplace(LEFT_UP_LEG, cv::Point2f(0,0));
+	map.try_emplace(LEFT_LEG, cv::Point2f(0,0));
+	map.try_emplace(LEFT_FOOT, cv::Point2f(0,0));
+
+    auto skeleton = Skeleton{};
+    skeleton.MoveAndClear();
+    skeleton.Current = map;
+
     DemoWorld.AddModel(1);
-    DemoWorld.AddModel(2);
+    //DemoWorld.AddModel(2);
 
     auto model1 = DemoWorld.GetModel(1);
-    auto model2 = DemoWorld.GetModel(2);
+    //auto model2 = DemoWorld.GetModel(2);
     Loader::LoadModel(Config::ModelPath, *model1);
-    Loader::LoadModel(Config::ModelPath, *model2);
+    //Loader::LoadModel(Config::ModelPath, *model2);
 
-	model1->Animate(Animation::Create(model1->GetBoneInfoMap()));
+    const auto animation = Animation::Create(skeleton, model1->GetBoneInfoMap());
+	model1->Animate(animation);
 }
 
 // Inside GUI render loop

@@ -190,6 +190,7 @@
     <ClInclude Include="Loader.hpp" />
     <ClInclude Include="PoseEstimation.hpp" />
     <ClInclude Include="Shader.hpp" />
+    <ClInclude Include="Skeleton.hpp" />
     <ClInclude Include="Utility.hpp" />
     <ClInclude Include="Vertex.hpp" />
     <ClInclude Include="VertexIndexBuffer.hpp" />

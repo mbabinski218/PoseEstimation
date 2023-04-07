@@ -221,6 +221,9 @@
     <ClInclude Include="View.hpp">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
+    <ClInclude Include="Skeleton.hpp">
+      <Filter>Header Files\Estimation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader.frag">

@@ -20,6 +20,11 @@ class Converter
 {
 public:
 
+	static cv::Size2f ToSize2f(const ImVec2& vec)
+	{
+		return {vec.x, vec.y};
+	}
+
 	static glm::mat4 ToGlmMatrix(const aiMatrix4x4& from)
 	{
 		glm::mat4 to;

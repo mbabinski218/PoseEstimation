@@ -1,6 +1,7 @@
 #pragma once
 #include "Libs.hpp"
 #include "Bone.hpp"
+#include "Skeleton.hpp"
 
 struct NodeData
 {
@@ -13,7 +14,7 @@ struct NodeData
 class Animation
 {
 public:
-	[[nodiscard]] static std::shared_ptr<Animation> Create(const std::map<std::string, BoneInfo>& boneInfoMap, float duration = 1.0f, int ticksPerSecond = 1);
+	[[nodiscard]] static std::shared_ptr<Animation> Create(const Skeleton& skeleton, const std::map<std::string, BoneInfo>& boneInfoMap, float duration = 1.0f, int ticksPerSecond = 1);
 
 	[[nodiscard]] Bone* FindBone(const std::string& name);
 	[[nodiscard]] int GetTicksPerSecond() const { return TicksPerSecond; }

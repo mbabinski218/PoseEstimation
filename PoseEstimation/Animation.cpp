@@ -1,32 +1,45 @@
 #include "Animation.hpp"
+#include "Config.hpp"
 #include "Utility.hpp"
 
-std::shared_ptr<Animation> Animation::Create(const std::map<std::string, BoneInfo>& boneInfoMap, const float duration, const int ticksPerSecond)
+void Fill(const BoneType boneType, NodeData& parentNode, const std::map<BoneType, glm::vec3> transformations)
 {
-	Animation animation{};
+	for(const auto& posePair : Config::PosePairs)
+	{
+		if(posePair[0] == boneType)
+		{
+			const auto iterator = transformations.find(posePair[1]);
+			if(iterator != transformations.end())
+			{
+				parentNode.ChildrenCount++;
+
+				auto node = NodeData{};
+				node.Name = Converter::ToString(iterator->first);
+				node.Transformation = glm::translate(glm::mat4(1.0f), iterator->second);
+				Fill(iterator->first, node, transformations);
+
+				parentNode.Children.push_back(node);
+			}
+		}
+	}
+}
+
+std::shared_ptr<Animation> Animation::Create(const Skeleton& skeleton, const std::map<std::string, BoneInfo>& boneInfoMap, const float duration, const int ticksPerSecond)
+{
+	auto animation = Animation{};
 	animation.BoneInfoMap = boneInfoMap;
 	animation.Duration = duration;
 	animation.TicksPerSecond = ticksPerSecond;
 
-	NodeData node3{};
-	node3.Name = Converter::ToString(LEFT_HAND);
-	node3.ChildrenCount = 0;
-	node3.Transformation = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 0.3f));
+	const auto transformations = skeleton.GetBonesTransformations();
+	const auto rootTransformation = transformations.begin();
 
-	NodeData node2{};
-	node2.Name = Converter::ToString(LEFT_FOREARM);
-	node2.ChildrenCount = 1;
-	node2.Children.push_back(node3);
-	node2.Transformation = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 0.3f));
+	auto rootNode = NodeData{};
+	rootNode.Name = Converter::ToString(rootTransformation->first);
+	rootNode.Transformation = glm::translate(glm::mat4(1.0f), rootTransformation->second);
+	Fill(rootTransformation->first, rootNode, transformations);
 
-	NodeData node1{};
-	node1.Name = Converter::ToString(LEFT_ARM);
-	node1.ChildrenCount = 2;
-	node1.Children.push_back(node2);
-	node1.Children.push_back(node3);
-	node1.Transformation = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.5f, 0.3f));
-		
-	animation.RootNode = node1;
+	animation.RootNode = rootNode;
 
 	return std::make_shared<Animation>(animation);
 }
