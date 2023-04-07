@@ -9,20 +9,18 @@ Demo::Demo() : Runnable()
     DemoWorld.AddModel(1);
     DemoWorld.AddModel(2);
 
-    auto model = DemoWorld.GetModel(1);
-    Loader::LoadModel(Config::ModelObjPath, *model);
-	model->Animate(Animation::Create(model->GetBoneInfoMap()));
+    auto model1 = DemoWorld.GetModel(1);
+    auto model2 = DemoWorld.GetModel(2);
+    Loader::LoadModel(Config::ModelPath, *model1);
+    Loader::LoadModel(Config::ModelPath, *model2);
+
+	model1->Animate(Animation::Create(model1->GetBoneInfoMap()));
 }
 
 // Inside GUI render loop
 void Demo::Loop()
 {
     //ImGui::ShowDemoWindow();
-
-    // DeltaTime
-    const auto currentFrame = static_cast<float>(glfwGetTime());
-    DeltaTime = currentFrame - LastFrame;
-    LastFrame = currentFrame;
 
     // Debug window
     ImGui::Text("%.1f FPS", static_cast<double>(ImGui::GetIO().Framerate));

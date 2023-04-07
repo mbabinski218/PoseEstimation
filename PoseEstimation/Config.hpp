@@ -7,12 +7,13 @@ struct Config
 {
 	inline static const char* const					  Title			    = "Pose estimation";
 	inline static const char* const					  GlslVersion		= "#version 430 core";
-	inline static ImVec2 constexpr					  WindowSize		= ImVec2(1920, 1080);
-	inline static ImVec2 constexpr					  FrontCameraSize   = ImVec2(640, 480);
-	inline static ImVec2 constexpr					  BackCameraSize    = ImVec2(640, 480);
+	inline static ImVec2 constexpr					  WindowSize		= {1920, 1080};
+	inline static ImVec2 constexpr					  FrameSize			= {1280, 720};
+	inline static ImVec2 constexpr					  FrontCameraSize   = {640, 480};
+	inline static ImVec2 constexpr					  BackCameraSize    = {640, 480};
 	inline static cv::VideoCaptureAPIs constexpr	  CameraApi		    = cv::CAP_ANY;
-	inline static CameraLinker<int> const			  FrontCameraLinker = CameraLinker(0);			
-	inline static CameraLinker<const char*> const	  BackCameraLinker  = CameraLinker("http://192.168.0.158:4747/video");		
+	inline static CameraLinker<int> const			  FrontCameraLinker = {0};
+	inline static CameraLinker<const char*> const	  BackCameraLinker  = {"http://192.168.0.158:4747/video"};
 	inline static std::string const					  ProtoTextPath	    = R"(\models\pose\coco\pose_deploy_linevec.prototxt)";		
 	inline static std::string const					  CaffeModel	    = R"(\models\pose\coco\pose_iter_440000.caffemodel)";	
 	inline static DnnTargetMode constexpr			  DnnMode			= DnnTargetMode::CPU;		
@@ -20,7 +21,7 @@ struct Config
 	inline static std::string const					  FontPath		    = R"(\fonts\CascadiaMono.ttf)";
 	inline static const char* const					  VertexCorePath	= R"(\shaders\shader.vert)";		
 	inline static const char* const				      FragmentCorePath  = R"(\shaders\shader.frag)";			
-	inline static std::string const					  ModelObjPath	    = R"(\3dModels\Man.glb)";
+	inline static std::string const					  ModelPath			= R"(\3dModels\Man.glb)";
 	inline static int constexpr					      MaxBoneInfluence  = 4;
 	inline static int constexpr					      MaxBones			= 100;
 	inline static int constexpr					      PoseParts	        = 18;		

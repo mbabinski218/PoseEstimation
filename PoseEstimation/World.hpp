@@ -9,7 +9,7 @@
 class World
 {
 public:
-	explicit World() : Frame(1280, 720), WorldShader(Config::VertexCorePath, Config::FragmentCorePath) {}
+	explicit World() : Frame(Config::FrameSize), WorldShader(Config::VertexCorePath, Config::FragmentCorePath) {}
 	void Draw();
 	void Update(const ImVec2& screenSize, float deltaTime);
 

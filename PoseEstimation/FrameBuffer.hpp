@@ -12,7 +12,7 @@ class FrameBuffer
 
 	// Methods
 public:
-    FrameBuffer(int width, int height);
+	explicit FrameBuffer(const ImVec2& size);
     ~FrameBuffer();
     void Bind() const;
 	void Unbind() const;

@@ -13,7 +13,7 @@ template<typename T>
 struct CameraLinker
 {
 	T Link;
-	explicit CameraLinker(T link) : Link(link) { }
+	CameraLinker(T link) : Link(link) { }
 };
 
 class Converter
