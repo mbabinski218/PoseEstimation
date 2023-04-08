@@ -66,7 +66,7 @@ void PoseEstimation::AddPoseToImage(const cv::Mat& mat)
     const auto width = OutputBlob.size[3];
     std::vector<cv::Point> points(PoseParts);
 
-    //PoseSkeleton.MoveAndClear();
+    PoseSkeleton.MoveAndClear();
 
     for (int n = 0; n < PoseParts; n++)
     {
@@ -94,8 +94,8 @@ void PoseEstimation::AddPoseToImage(const cv::Mat& mat)
         if (partA.x <= 0 || partA.y <= 0 || partB.x <= 0 || partB.y <= 0)
             continue;
 
-        //PoseSkeleton.Current.try_emplace(posePair[0], partA);
-        //PoseSkeleton.Current.try_emplace(posePair[1], partB);
+        PoseSkeleton.Current.try_emplace(posePair[0], partA);
+        PoseSkeleton.Current.try_emplace(posePair[1], partB);
 
         line(mat, partA, partB, cv::Scalar(65, 115, 190), 5);
         circle(mat, partA, 4, cv::Scalar(220, 220, 220), 1);

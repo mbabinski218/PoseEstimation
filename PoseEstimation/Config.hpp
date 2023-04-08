@@ -12,8 +12,8 @@ struct Config
 	inline static ImVec2 constexpr						   FrontCameraSize   = {640, 480};
 	inline static ImVec2 constexpr						   BackCameraSize    = {640, 480};
 	inline static cv::VideoCaptureAPIs constexpr		   CameraApi		 = cv::CAP_ANY;
-	inline static CameraLinker<int> const				   FrontCameraLinker = {0};
-	inline static CameraLinker<const char*> const		   BackCameraLinker  = {"http://192.168.0.158:4747/video"};
+	inline static CameraLinker<int> constexpr			   FrontCameraLinker = {0};
+	inline static CameraLinker<const char*> constexpr	   BackCameraLinker  = {"http://192.168.0.158:4747/video"};
 	inline static const char* const						   ProtoTextPath	 = R"(\models\pose\coco\pose_deploy_linevec.prototxt)";
 	inline static const char* const						   CaffeModel	     = R"(\models\pose\coco\pose_iter_440000.caffemodel)";
 	inline static DnnTargetMode constexpr				   DnnMode			 = DnnTargetMode::CPU;		
@@ -31,5 +31,5 @@ struct Config
 																				{NECK, RIGHT_UP_LEG}, {NECK, LEFT_UP_LEG},
 																				{RIGHT_UP_LEG, RIGHT_LEG}, {RIGHT_LEG, RIGHT_FOOT},
 																				{LEFT_UP_LEG, LEFT_LEG}, {LEFT_LEG, LEFT_FOOT},
-																				{HEAD, NECK}};
+																				{NECK, HEAD}};
 };

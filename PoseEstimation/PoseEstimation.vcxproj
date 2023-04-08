@@ -137,7 +137,6 @@
   <ItemGroup>
     <ClCompile Include="Animation.cpp" />
     <ClCompile Include="Animator.cpp" />
-    <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Demo.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Gui.cpp" />

@@ -17,7 +17,7 @@ public:
 	[[nodiscard]] int GetId() const { return Id; }
 	[[nodiscard]] std::vector<Mesh>& GetMeshes() { return Meshes; }
 	[[nodiscard]] int& GetBoneCounter() { return BoneCounter; }
-	[[nodiscard]] std::map<std::string, BoneInfo>& GetBoneInfoMap() { return BoneInfoMap; }
+	[[nodiscard]] std::unordered_map<std::string, BoneInfo>& GetBoneInfoMap() { return BoneInfoMap; }
 
 private:
 	void UpdateModel();
@@ -26,7 +26,7 @@ private:
 	std::vector<Mesh> Meshes{};
 
 	glm::mat4 ModelMatrix{};
-	std::map<std::string, BoneInfo> BoneInfoMap{};
+	std::unordered_map<std::string, BoneInfo> BoneInfoMap{};
 	int BoneCounter = 0;
 	int Id = -1;
 };

@@ -27,22 +27,17 @@ void Animator::Update(const float deltaTime)
 
 void Animator::CalculateBoneTransform(const NodeData& node, const glm::mat4& parentTransform)
 {
-	const auto nodeName = node.Name;
-	auto nodeTransform = node.Transformation;
+	const auto nodeName = node.BoneName;
 
-	if (const auto bone = CurrentAnimation->FindBone(nodeName))
+	const auto globalTransformation = parentTransform * node.Transformation;
+
+	const auto boneInfoMap = CurrentAnimation->GetBoneIdMap();
+	const auto iterator = boneInfoMap.find(nodeName);
+
+	if (iterator != boneInfoMap.end())
 	{
-		bone->Update(CurrentTime);
-		nodeTransform = bone->GetLocalTransform();
-	}
-
-	const auto globalTransformation = parentTransform * nodeTransform;
-
-	auto boneInfoMap = CurrentAnimation->GetBoneIdMap();
-	if (boneInfoMap.contains(nodeName))
-	{
-		const auto index = boneInfoMap[nodeName].Id;
-		const auto offset = boneInfoMap[nodeName].Offset;
+		const auto index = iterator->second.Id;
+		const auto offset = iterator->second.Offset;
 		FinalBoneMatrices[index] = globalTransformation * offset;
 	}
 

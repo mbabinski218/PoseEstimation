@@ -1,6 +1,7 @@
 #pragma once
 #include "Libs.hpp"
 #include "Bone.hpp"
+#include "Utility.hpp"
 
 struct Skeleton
 {
@@ -18,10 +19,8 @@ struct Skeleton
 		auto map = std::map<BoneType, glm::vec3>{};
 
 		for(const auto& point : Current)
-		{
-			const auto prevIter = Previous.find(point.first);
-
-			if(prevIter != Previous.end())
+		{			
+			if(Previous.contains(point.first))
 			{
 				const auto prev = Previous.at(point.first);
 				map.try_emplace(point.first, glm::vec3{point.second.x - prev.x, point.second.y - prev.y, 0});

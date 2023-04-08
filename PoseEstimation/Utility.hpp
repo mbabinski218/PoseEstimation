@@ -1,4 +1,5 @@
 #pragma once
+#include <ranges>
 #include <assimp/matrix4x4.h>
 #include <assimp/quaternion.h>
 #include "Bone.hpp"
@@ -13,7 +14,6 @@ template<typename T>
 struct CameraLinker
 {
 	T Link;
-	CameraLinker(T link) : Link(link) { }
 };
 
 class Converter
@@ -64,7 +64,32 @@ public:
 		case LEFT_UP_LEG:	return "LeftUpLeg";
 		case LEFT_LEG:		return "LeftLeg";
 		case LEFT_FOOT:		return "LeftFoot";
-		}
-		throw std::exception("Bone mapping error");
+		default:			throw std::exception("Bone mapping error");
+		}		
 	}
 };
+
+static auto FindBetween(const std::unordered_map<std::string, BoneInfo>& map, const int minIndex, const int maxIndex)
+{
+	//const std::unordered_map<std::string, BoneInfo> subrange;
+	//std::copy_if(map.begin(), map.end(), subrange, [&](const std::pair<std::string, BoneInfo>& boneInfo)
+	//{
+	//	return boneInfo.second.Id > minIndex && boneInfo.second.Id < maxIndex;
+	//});
+
+	/*return subrange;*/
+
+	return map | std::ranges::views::filter([&](const std::pair<std::string, BoneInfo>& boneInfo)
+	{
+		return boneInfo.second.Id > minIndex && boneInfo.second.Id < maxIndex;
+	});
+}
+
+template<typename T, typename U>
+static bool IsMapContains(const std::map<T, U>& map, const T element)
+{
+	return std::ranges::any_of(map, [&](const std::pair<T, U>& mapElement)
+	{
+		return mapElement.first == element;
+	});
+}

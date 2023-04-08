@@ -35,8 +35,12 @@ Demo::Demo() : Runnable()
     Loader::LoadModel(Config::ModelPath, *model1);
     //Loader::LoadModel(Config::ModelPath, *model2);
 
-    const auto animation = Animation::Create(skeleton, model1->GetBoneInfoMap());
-	model1->Animate(animation);
+    const auto animation = Animation(skeleton, model1->GetBoneInfoMap());
+    const auto animationPtr = std::make_shared<Animation>(animation);
+
+    const auto aaa = model1->GetBoneInfoMap();
+
+	model1->Animate(animationPtr);
 }
 
 // Inside GUI render loop

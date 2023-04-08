@@ -1,22 +1,43 @@
 #include "Animation.hpp"
 #include "Config.hpp"
 #include "Utility.hpp"
+#include <ranges>
 
-void Fill(const BoneType boneType, NodeData& parentNode, const std::map<BoneType, glm::vec3> transformations)
+Animation::Animation(const Skeleton& skeleton, const std::unordered_map<std::string, BoneInfo>& boneInfoMap, const float duration, const int ticksPerSecond) :
+	Duration(duration), TicksPerSecond(ticksPerSecond), BoneInfoMap(std::move(boneInfoMap))
+{
+	const auto transformations = skeleton.GetBonesTransformations();
+	const auto rootNodeTransformation = transformations.begin();
+
+	auto rootNode = NodeData{};
+	rootNode.Type = rootNodeTransformation->first;
+	rootNode.BoneName = Converter::ToString(rootNodeTransformation->first);
+	rootNode.Transformation = glm::translate(glm::mat4(1.0f), rootNodeTransformation->second);
+	Fill(rootNodeTransformation->first, rootNode, transformations);
+	RootNode = rootNode;
+
+	ReadMissingBones(RootNode);
+	auto vec = GetBones(-1, BoneInfoMap.find(rootNode.BoneName)->second.Id);
+	RootNode.Children.insert(RootNode.Children.end(), vec.begin(), vec.end());
+	RootNode.ChildrenCount += static_cast<int>(vec.size());
+}
+
+void Animation::Fill(const BoneType boneType, NodeData& parentNode, const std::map<BoneType, glm::vec3>& transformations)
 {
 	for(const auto& posePair : Config::PosePairs)
 	{
 		if(posePair[0] == boneType)
 		{
-			const auto iterator = transformations.find(posePair[1]);
-			if(iterator != transformations.end())
+			const auto pairIterator = transformations.find(posePair[1]);
+			if(pairIterator != transformations.end())
 			{
 				parentNode.ChildrenCount++;
 
 				auto node = NodeData{};
-				node.Name = Converter::ToString(iterator->first);
-				node.Transformation = glm::translate(glm::mat4(1.0f), iterator->second);
-				Fill(iterator->first, node, transformations);
+				node.Type = pairIterator->first;
+				node.BoneName = Converter::ToString(pairIterator->first);
+				node.Transformation = glm::translate(glm::mat4(1.0f), pairIterator->second);
+				Fill(pairIterator->first, node, transformations);
 
 				parentNode.Children.push_back(node);
 			}
@@ -24,35 +45,46 @@ void Fill(const BoneType boneType, NodeData& parentNode, const std::map<BoneType
 	}
 }
 
-std::shared_ptr<Animation> Animation::Create(const Skeleton& skeleton, const std::map<std::string, BoneInfo>& boneInfoMap, const float duration, const int ticksPerSecond)
+std::vector<NodeData> Animation::GetBones(const int minId, const int maxId)
 {
-	auto animation = Animation{};
-	animation.BoneInfoMap = boneInfoMap;
-	animation.Duration = duration;
-	animation.TicksPerSecond = ticksPerSecond;
+	auto vec = std::vector<NodeData>{};
 
-	const auto transformations = skeleton.GetBonesTransformations();
-	const auto rootTransformation = transformations.begin();
-
-	auto rootNode = NodeData{};
-	rootNode.Name = Converter::ToString(rootTransformation->first);
-	rootNode.Transformation = glm::translate(glm::mat4(1.0f), rootTransformation->second);
-	Fill(rootTransformation->first, rootNode, transformations);
-
-	animation.RootNode = rootNode;
-
-	return std::make_shared<Animation>(animation);
-}
-
-Bone* Animation::FindBone(const std::string& name)
-{
-	const auto iterator = std::ranges::find_if(Bones, [&](const Bone& bone)
+	auto subrange = BoneInfoMap | std::ranges::views::filter([&](const std::pair<std::string, BoneInfo>& boneInfo)
 	{
-		return bone.GetName() == name;
+		return boneInfo.second.Id > minId && boneInfo.second.Id < maxId;
 	});
 
-	if (iterator == Bones.end())
-		return nullptr;
+	for (const auto& elementKey : subrange | std::views::keys)
+	{
+		auto node = NodeData{};
+		node.Type = UNKNOWN;
+		node.BoneName = elementKey;
+		node.Transformation = glm::mat4(1.0f);
 
-	return &*iterator;
+		vec.push_back(node);
+	}
+
+	return vec;
+}
+
+void Animation::ReadMissingBones(NodeData& parentNode)
+{
+	if (parentNode.Type == UNKNOWN)
+		return;
+
+	const auto minId = BoneInfoMap.find(parentNode.BoneName)->second.Id;
+
+	const auto nextType = static_cast<BoneType>(parentNode.Type + 1);
+	auto maxId = -1;
+	if (nextType != UNKNOWN)
+		maxId = BoneInfoMap.find(Converter::ToString(nextType))->second.Id;
+	else
+		maxId = static_cast<int>(BoneInfoMap.size()) - 1;
+
+	auto vec = GetBones(minId, maxId);
+	parentNode.Children.insert(parentNode.Children.end(), vec.begin(), vec.end());
+	parentNode.ChildrenCount += static_cast<int>(vec.size());
+
+	for (auto& children : parentNode.Children)
+		ReadMissingBones(children);
 }
