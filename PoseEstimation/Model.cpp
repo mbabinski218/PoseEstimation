@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Model.hpp"
 
 void Model::Draw() const

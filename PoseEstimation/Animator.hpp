@@ -1,5 +1,4 @@
 #pragma once
-#include "Libs.hpp"
 #include "Animation.hpp"
 
 class Animator

@@ -1,5 +1,4 @@
 #pragma once
-#include "Libs.hpp"
 #include "View.hpp"
 #include "Model.hpp"
 #include "Material.hpp"

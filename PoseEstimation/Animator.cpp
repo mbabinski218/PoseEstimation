@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Animator.hpp"
 #include "Config.hpp"
 

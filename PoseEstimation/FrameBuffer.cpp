@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "FrameBuffer.hpp"
 
 FrameBuffer::FrameBuffer(const ImVec2& size) :
@@ -38,7 +39,7 @@ FrameBuffer::FrameBuffer(const ImVec2& size) :
 
 FrameBuffer::~FrameBuffer()
 {
-    //Clear();
+    Clear();
 }
 
 void FrameBuffer::Bind() const

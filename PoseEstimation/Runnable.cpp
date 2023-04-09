@@ -1,7 +1,8 @@
+#include "stdafx.h"
 #include "Runnable.hpp"
 #include "Config.hpp"
 
-Runnable::Runnable() : Window(nullptr)
+Runnable::Runnable()
 {
     InitGlfw();
     InitWindow();

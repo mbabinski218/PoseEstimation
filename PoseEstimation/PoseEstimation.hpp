@@ -1,5 +1,4 @@
 #pragma once
-#include "Libs.hpp"
 #include "Config.hpp"
 #include "ImageConverter.hpp"
 #include "Skeleton.hpp"

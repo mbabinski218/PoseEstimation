@@ -1,5 +1,4 @@
 #pragma once
-#include "Libs.hpp"
 #include "Utility.hpp"
 #include "Bone.hpp"
 
@@ -32,4 +31,18 @@ struct Config
 																				{RIGHT_UP_LEG, RIGHT_LEG}, {RIGHT_LEG, RIGHT_FOOT},
 																				{LEFT_UP_LEG, LEFT_LEG}, {LEFT_LEG, LEFT_FOOT},
 																				{NECK, HEAD}};
+	inline static std::map<BoneType, std::string> const    BoneTypeNames  = {{NECK,		    "Neck"},
+																				{HEAD,		    "Neck"},
+																				{LEFT_ARM,	    "LeftArm"},
+																				{LEFT_FOREARM,  "LeftForeArm"},
+																				{LEFT_HAND,     "LeftHand"},
+																				{RIGHT_ARM,     "RightArm"},
+																				{RIGHT_FOREARM, "RightForeArm"},
+																				{RIGHT_HAND,    "RightHand"},
+																				{LEFT_UP_LEG,   "LeftUpLeg"},
+																				{LEFT_LEG,      "LeftLeg"},
+																				{LEFT_FOOT,     "LeftFoot"},
+																				{RIGHT_UP_LEG,  "RightUpLeg"},
+																				{RIGHT_LEG,     "RightLeg"},
+																				{RIGHT_FOOT,    "RightFoot"}};
 };

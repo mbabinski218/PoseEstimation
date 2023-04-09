@@ -1,7 +1,6 @@
+#include "stdafx.h"
 #include "Animation.hpp"
 #include "Config.hpp"
-#include "Utility.hpp"
-#include <ranges>
 
 Animation::Animation(const Skeleton& skeleton, const std::unordered_map<std::string, BoneInfo>& boneInfoMap, const float duration, const int ticksPerSecond) :
 	Duration(duration), TicksPerSecond(ticksPerSecond), BoneInfoMap(std::move(boneInfoMap))
@@ -11,7 +10,7 @@ Animation::Animation(const Skeleton& skeleton, const std::unordered_map<std::str
 
 	auto rootNode = NodeData{};
 	rootNode.Type = rootNodeTransformation->first;
-	rootNode.BoneName = Converter::ToString(rootNodeTransformation->first);
+	rootNode.BoneName = Config::BoneTypeNames.at(rootNodeTransformation->first);
 	rootNode.Transformation = glm::translate(glm::mat4(1.0f), rootNodeTransformation->second);
 	Fill(rootNodeTransformation->first, rootNode, transformations);
 	RootNode = rootNode;
@@ -35,7 +34,7 @@ void Animation::Fill(const BoneType boneType, NodeData& parentNode, const std::m
 
 				auto node = NodeData{};
 				node.Type = pairIterator->first;
-				node.BoneName = Converter::ToString(pairIterator->first);
+				node.BoneName = Config::BoneTypeNames.at(pairIterator->first);
 				node.Transformation = glm::translate(glm::mat4(1.0f), pairIterator->second);
 				Fill(pairIterator->first, node, transformations);
 
@@ -77,7 +76,7 @@ void Animation::ReadMissingBones(NodeData& parentNode)
 	const auto nextType = static_cast<BoneType>(parentNode.Type + 1);
 	auto maxId = -1;
 	if (nextType != UNKNOWN)
-		maxId = BoneInfoMap.find(Converter::ToString(nextType))->second.Id;
+		maxId = BoneInfoMap.find(Config::BoneTypeNames.at(nextType))->second.Id;
 	else
 		maxId = static_cast<int>(BoneInfoMap.size()) - 1;
 

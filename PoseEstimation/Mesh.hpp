@@ -1,5 +1,4 @@
 #pragma once
-#include "Libs.hpp"
 #include "Vertex.hpp"
 #include "VertexIndexBuffer.hpp"
 

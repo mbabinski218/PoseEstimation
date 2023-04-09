@@ -1,7 +1,5 @@
 #pragma once
-#include "Libs.hpp"
 #include "Bone.hpp"
-#include "Utility.hpp"
 
 struct Skeleton
 {

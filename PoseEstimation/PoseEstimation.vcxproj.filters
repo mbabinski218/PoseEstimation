@@ -60,9 +60,6 @@
     <ClCompile Include="imgui\imgui.cpp">
       <Filter>Source Files\Gui\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_demo.cpp">
-      <Filter>Source Files\Gui\imgui</Filter>
-    </ClCompile>
     <ClCompile Include="imgui\imgui_draw.cpp">
       <Filter>Source Files\Gui\imgui</Filter>
     </ClCompile>
@@ -113,6 +110,9 @@
     </ClCompile>
     <ClCompile Include="View.cpp">
       <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -194,7 +194,7 @@
     <ClInclude Include="Animator.hpp">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Libs.hpp">
+    <ClInclude Include="stdafx.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="Config.hpp">

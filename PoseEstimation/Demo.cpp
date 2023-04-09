@@ -1,5 +1,5 @@
+#include "stdafx.h"
 #include "Demo.hpp"
-
 #include "Loader.hpp"
 #include "Model.hpp"
 
