@@ -1,4 +1,6 @@
+#include "stdafx.h"
 #include "PoseEstimation.hpp"
+#include "Utility.hpp"
 
 // Methods
 std::shared_ptr<cv::dnn::Net> PoseEstimation::CreateDnnNet(const std::string& protoTextPath, const std::string& caffeModel, const DnnTargetMode& dnnMode)
@@ -25,24 +27,24 @@ std::shared_ptr<cv::dnn::Net> PoseEstimation::CreateDnnNet(const std::string& pr
     return std::make_shared<cv::dnn::Net>(net);
 }
 
-PoseEstimation::PoseEstimation(std::shared_ptr<cv::dnn::Net> net, const ImVec2& size, const int& poseParts,std::vector<std::vector<int>> posePairs, const double& threshHold) :
+PoseEstimation::PoseEstimation(std::shared_ptr<cv::dnn::Net> net, const ImVec2& size, const int poseParts,std::vector<std::vector<BoneType>> posePairs, const double threshHold) :
 	Net(std::move(net)),
-	Image(std::make_unique<ImageConverter>()),
-	OutputBlob(std::make_unique<cv::Mat>()),
+	CameraSize(Converter::ToSize2f(size)),
+	ThreshHold(threshHold),
 	PosePairs(std::move(posePairs)),
-	ThreshHold(threshHold), PoseParts(poseParts)
+	PoseParts(poseParts)
 {
-    CameraSize = cv::Size2f(size.x, size.y);
+    
 }
 
-void PoseEstimation::FindPose(const std::unique_ptr<cv::Mat>& mat) const
+void PoseEstimation::FindPose(const cv::Mat& mat)
 {
-	const auto inputBlob = cv::dnn::blobFromImage(*mat, 1.0 / 255.0, cv::Size(299, 299), cv::Scalar(0, 0, 0));
+	const auto inputBlob = cv::dnn::blobFromImage(mat, 1.0 / 255.0, cv::Size(299, 299), cv::Scalar(0, 0, 0));
 	Net->setInput(inputBlob);
-    *OutputBlob = Net->forward();
+    OutputBlob = Net->forward();
 }
 
-void PoseEstimation::Update(const std::unique_ptr<cv::Mat>& mat) const
+void PoseEstimation::Update(const cv::Mat& mat)
 {
 	const auto thread = std::make_unique<std::jthread>([&]() 
 	{
@@ -51,23 +53,25 @@ void PoseEstimation::Update(const std::unique_ptr<cv::Mat>& mat) const
 	});
 	thread->join();
 
-	Image->UpdateMat(*mat);
+	Image.UpdateMat(mat);
 }
 
 void* PoseEstimation::GetTexture() const
 {
-	return Image->GetTexture();
+	return Image.GetTexture();
 }
 
-void PoseEstimation::AddPoseToImage(const std::unique_ptr<cv::Mat>& mat) const
+void PoseEstimation::AddPoseToImage(const cv::Mat& mat)
 {
-    const auto height = OutputBlob->size[2];
-    const auto width = OutputBlob->size[3];
+    const auto height = OutputBlob.size[2];
+    const auto width = OutputBlob.size[3];
     std::vector<cv::Point> points(PoseParts);
+
+    PoseSkeleton.MoveAndClear();
 
     for (int n = 0; n < PoseParts; n++)
     {
-        cv::Mat probMap(height, width, CV_32F, OutputBlob->ptr(0, n));
+        cv::Mat probMap(height, width, CV_32F, *OutputBlob.ptr(0, n));
         cv::Point2f p(-1, -1);
         cv::Point maxLoc;
         double maxVal;
@@ -91,10 +95,13 @@ void PoseEstimation::AddPoseToImage(const std::unique_ptr<cv::Mat>& mat) const
         if (partA.x <= 0 || partA.y <= 0 || partB.x <= 0 || partB.y <= 0)
             continue;
 
-        line(*mat, partA, partB, cv::Scalar(65, 115, 190), 5);
-        circle(*mat, partA, 4, cv::Scalar(220, 220, 220), 1);
-        circle(*mat, partB, 4, cv::Scalar(220, 220, 220), 1);
-        putText(*mat, std::to_string(posePair[0]), partA, 0, 0.5, cv::Scalar(0, 0, 0), 2);
-        putText(*mat, std::to_string(posePair[1]), partB, 0, 0.5, cv::Scalar(0, 0, 0), 2);
+        PoseSkeleton.Current.try_emplace(posePair[0], partA);
+        PoseSkeleton.Current.try_emplace(posePair[1], partB);
+
+        line(mat, partA, partB, cv::Scalar(65, 115, 190), 5);
+        circle(mat, partA, 4, cv::Scalar(220, 220, 220), 1);
+        circle(mat, partB, 4, cv::Scalar(220, 220, 220), 1);
+        putText(mat, std::to_string(posePair[0]), partA, 0, 0.5, cv::Scalar(0, 0, 0), 2);
+        putText(mat, std::to_string(posePair[1]), partB, 0, 0.5, cv::Scalar(0, 0, 0), 2);
     }
 }

@@ -60,9 +60,6 @@
     <ClCompile Include="imgui\imgui.cpp">
       <Filter>Source Files\Gui\imgui</Filter>
     </ClCompile>
-    <ClCompile Include="imgui\imgui_demo.cpp">
-      <Filter>Source Files\Gui\imgui</Filter>
-    </ClCompile>
     <ClCompile Include="imgui\imgui_draw.cpp">
       <Filter>Source Files\Gui\imgui</Filter>
     </ClCompile>
@@ -108,14 +105,14 @@
     <ClCompile Include="Animation.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Bone.cpp">
-      <Filter>Source Files\Engine</Filter>
-    </ClCompile>
     <ClCompile Include="World.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
     <ClCompile Include="View.cpp">
       <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files\Common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -197,7 +194,7 @@
     <ClInclude Include="Animator.hpp">
       <Filter>Header Files\Engine</Filter>
     </ClInclude>
-    <ClInclude Include="Libs.hpp">
+    <ClInclude Include="stdafx.h">
       <Filter>Header Files\Common</Filter>
     </ClInclude>
     <ClInclude Include="Config.hpp">
@@ -220,6 +217,9 @@
     </ClInclude>
     <ClInclude Include="View.hpp">
       <Filter>Header Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.hpp">
+      <Filter>Header Files\Estimation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

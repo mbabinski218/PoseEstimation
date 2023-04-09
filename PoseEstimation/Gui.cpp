@@ -1,5 +1,6 @@
-//#include "Gui.hpp"
-//
+#include "stdafx.h"
+#include "Gui.hpp"
+
 //// Methods
 //Gui::Gui() : Runnable(), FrontCameraCancellationToken(false), BackCameraCancellationToken(false)
 //{

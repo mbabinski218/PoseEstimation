@@ -1,7 +1,8 @@
+#include "stdafx.h"
 #include "Runnable.hpp"
 #include "Config.hpp"
 
-Runnable::Runnable() : Window(nullptr)
+Runnable::Runnable()
 {
     InitGlfw();
     InitWindow();
@@ -21,6 +22,11 @@ void Runnable::Render()
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+
+        // DeltaTime
+        const auto currentFrame = static_cast<float>(glfwGetTime());
+        DeltaTime = currentFrame - LastFrame;
+        LastFrame = currentFrame;
 
         // Interface
         Loop();

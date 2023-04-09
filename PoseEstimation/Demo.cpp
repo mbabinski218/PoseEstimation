@@ -1,28 +1,52 @@
+#include "stdafx.h"
 #include "Demo.hpp"
-
 #include "Loader.hpp"
 #include "Model.hpp"
 
 // Methods
 Demo::Demo() : Runnable()
 {
-    DemoWorld.AddModel(1);
-    DemoWorld.AddModel(2);
+    auto map = std::map<BoneType, cv::Point2f>{};
 
-    auto model = DemoWorld.GetModel(1);
-    Loader::LoadModel(Config::ModelObjPath, *model);
-	model->Animate(Animation::Create(model->GetBoneInfoMap()));
+	map.try_emplace(HEAD, cv::Point2f(0,0));
+	map.try_emplace(NECK, cv::Point2f(0,0));
+	map.try_emplace(RIGHT_ARM, cv::Point2f(0,0));
+	map.try_emplace(RIGHT_FOREARM, cv::Point2f(0,0));
+	map.try_emplace(RIGHT_HAND, cv::Point2f(0,0));
+	map.try_emplace(LEFT_ARM, cv::Point2f(0,0));
+	map.try_emplace(LEFT_FOREARM, cv::Point2f(0,0));
+	map.try_emplace(LEFT_HAND, cv::Point2f(0,0));
+	map.try_emplace(RIGHT_UP_LEG, cv::Point2f(0,0));
+	map.try_emplace(RIGHT_LEG, cv::Point2f(0,0));
+	map.try_emplace(RIGHT_FOOT, cv::Point2f(0,0));
+	map.try_emplace(LEFT_UP_LEG, cv::Point2f(0,0));
+	map.try_emplace(LEFT_LEG, cv::Point2f(0,0));
+	map.try_emplace(LEFT_FOOT, cv::Point2f(0,0));
+
+    auto skeleton = Skeleton{};
+    skeleton.MoveAndClear();
+    skeleton.Current = map;
+
+    DemoWorld.AddModel(1);
+    //DemoWorld.AddModel(2);
+
+    auto model1 = DemoWorld.GetModel(1);
+    //auto model2 = DemoWorld.GetModel(2);
+    Loader::LoadModel(Config::ModelPath, *model1);
+    //Loader::LoadModel(Config::ModelPath, *model2);
+
+    const auto animation = Animation(skeleton, model1->GetBoneInfoMap());
+    const auto animationPtr = std::make_shared<Animation>(animation);
+
+    const auto aaa = model1->GetBoneInfoMap();
+
+	model1->Animate(animationPtr);
 }
 
 // Inside GUI render loop
 void Demo::Loop()
 {
     //ImGui::ShowDemoWindow();
-
-    // DeltaTime
-    const auto currentFrame = static_cast<float>(glfwGetTime());
-    DeltaTime = currentFrame - LastFrame;
-    LastFrame = currentFrame;
 
     // Debug window
     ImGui::Text("%.1f FPS", static_cast<double>(ImGui::GetIO().Framerate));

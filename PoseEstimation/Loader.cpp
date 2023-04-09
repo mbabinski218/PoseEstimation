@@ -1,9 +1,5 @@
+#include "stdafx.h"
 #include "Loader.hpp"
-#include "Utility.hpp"
-#include "Config.hpp"
-
-#include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
 
 void Loader::LoadModel(const std::string& path, Model& model)
 {
@@ -44,7 +40,6 @@ void Loader::SetVertexBoneDataToDefault(Vertex& vertex)
         vertex.Weights[i] = 0.0f;
     }
 }
-
 
 Mesh Loader::ProcessMesh(Model& model, const aiMesh* mesh, const aiScene* scene)
 {

@@ -1,11 +1,12 @@
+#include "stdafx.h"
 #include "FrameBuffer.hpp"
 
-FrameBuffer::FrameBuffer(const int width, const int height) :
+FrameBuffer::FrameBuffer(const ImVec2& size) :
 	FBO(0),
 	TextureId(0),
 	DepthId(0),
-	Width(width),
-	Height(height)
+	Width(static_cast<int>(size.x)),
+	Height(static_cast<int>(size.y))
 {
     glGenFramebuffers(1, &FBO);
     glBindFramebuffer(GL_FRAMEBUFFER, FBO);
@@ -38,7 +39,7 @@ FrameBuffer::FrameBuffer(const int width, const int height) :
 
 FrameBuffer::~FrameBuffer()
 {
-    //Clear();
+    Clear();
 }
 
 void FrameBuffer::Bind() const

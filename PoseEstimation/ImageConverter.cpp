@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "ImageConverter.hpp"
 
 ImageConverter::ImageConverter() : Texture(0), Width(0), Height(0) { }

@@ -1,5 +1,4 @@
 #pragma once
-#include "assimp/scene.h"
 #include "Model.hpp"
 #include "Vertex.hpp"
 

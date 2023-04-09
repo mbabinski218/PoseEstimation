@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "VertexIndexBuffer.hpp"
 
 VertexIndexBuffer::VertexIndexBuffer(const std::vector<Vertex>& vertices, const std::vector<GLuint>& indices) :
