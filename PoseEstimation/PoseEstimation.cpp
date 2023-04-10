@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "PoseEstimation.hpp"
-#include "Utility.hpp"
 
 // Methods
 std::shared_ptr<cv::dnn::Net> PoseEstimation::CreateDnnNet(const std::string& protoTextPath, const std::string& caffeModel, const DnnTargetMode& dnnMode)
@@ -27,33 +26,20 @@ std::shared_ptr<cv::dnn::Net> PoseEstimation::CreateDnnNet(const std::string& pr
     return std::make_shared<cv::dnn::Net>(net);
 }
 
-PoseEstimation::PoseEstimation(std::shared_ptr<cv::dnn::Net> net, const ImVec2& size, const int poseParts,std::vector<std::vector<BoneType>> posePairs, const double threshHold) :
-	Net(std::move(net)),
-	CameraSize(Converter::ToSize2f(size)),
-	ThreshHold(threshHold),
-	PosePairs(std::move(posePairs)),
-	PoseParts(poseParts)
-{
-    
-}
-
 void PoseEstimation::FindPose(const cv::Mat& mat)
 {
 	const auto inputBlob = cv::dnn::blobFromImage(mat, 1.0 / 255.0, cv::Size(299, 299), cv::Scalar(0, 0, 0));
 	Net->setInput(inputBlob);
-    OutputBlob = Net->forward();
+    OutputBlob = std::make_unique<cv::Mat>(Net->forward());
 }
 
-void PoseEstimation::Update(const cv::Mat& mat)
+void PoseEstimation::Update(const cv::Mat mat, World& world)
 {
-	const auto thread = std::make_unique<std::jthread>([&]() 
-	{
-		FindPose(mat);
-        AddPoseToImage(mat);
-	});
-	thread->join();
+    FindPose(mat);
+    AddPoseToImage(mat);
 
-	Image.UpdateMat(mat);
+    auto updateWorldThread = std::jthread([&] { UpdateWorldModels(world); });
+    Image.UpdateMat(mat);
 }
 
 void* PoseEstimation::GetTexture() const
@@ -63,31 +49,31 @@ void* PoseEstimation::GetTexture() const
 
 void PoseEstimation::AddPoseToImage(const cv::Mat& mat)
 {
-    const auto height = OutputBlob.size[2];
-    const auto width = OutputBlob.size[3];
-    std::vector<cv::Point> points(PoseParts);
+    const auto height = OutputBlob->size[2];
+    const auto width = OutputBlob->size[3];
+    auto points = std::vector<cv::Point>(Config::PoseParts);
 
     PoseSkeleton.MoveAndClear();
 
-    for (int n = 0; n < PoseParts; n++)
+    for (int n = 0; n < Config::PoseParts; n++)
     {
-        cv::Mat probMap(height, width, CV_32F, *OutputBlob.ptr(0, n));
-        cv::Point2f p(-1, -1);
-        cv::Point maxLoc;
-        double maxVal;
+        const auto probMap = cv::Mat(height, width, CV_32F, OutputBlob->ptr(0, n));
+        auto point = cv::Point2f(-1, -1);
+        auto maxLoc = cv::Point{};
+        auto maxVal = 0.0;
 
         minMaxLoc(probMap, nullptr, &maxVal, nullptr, &maxLoc);
 
-        if (maxVal > ThreshHold)
+        if (maxVal > Config::ThreshHold)
         {
-            p = maxLoc;
-            p.x *= CameraSize.width / static_cast<float>(width);
-            p.y *= CameraSize.height / static_cast<float>(height);
+            point = maxLoc;
+            point.x *= CameraSize.width / static_cast<float>(width);
+            point.y *= CameraSize.height / static_cast<float>(height);
         }
-        points[n] = p;
+        points[n] = point;
     }
 
-    for (const auto& posePair : PosePairs)
+    for (const auto& posePair : Config::PosePairs)
     {
         cv::Point2f partA = points[posePair[0]];
         cv::Point2f partB = points[posePair[1]];
@@ -104,4 +90,11 @@ void PoseEstimation::AddPoseToImage(const cv::Mat& mat)
         putText(mat, std::to_string(posePair[0]), partA, 0, 0.5, cv::Scalar(0, 0, 0), 2);
         putText(mat, std::to_string(posePair[1]), partB, 0, 0.5, cv::Scalar(0, 0, 0), 2);
     }
+}
+
+void PoseEstimation::UpdateWorldModels(World& world) const
+{
+    const auto model = world.GetModel(1);
+    const auto animation = Animation(PoseSkeleton, model->GetBoneInfoMap());
+    model->Animate(std::make_shared<Animation>(animation));
 }

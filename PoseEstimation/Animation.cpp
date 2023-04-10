@@ -2,8 +2,8 @@
 #include "Animation.hpp"
 #include "Config.hpp"
 
-Animation::Animation(const Skeleton& skeleton, const std::unordered_map<std::string, BoneInfo>& boneInfoMap, const float duration, const int ticksPerSecond) :
-	Duration(duration), TicksPerSecond(ticksPerSecond), BoneInfoMap(std::move(boneInfoMap))
+Animation::Animation(const Skeleton& skeleton, const std::unordered_map<std::string, BoneInfo>& boneInfoMap) :
+	BoneInfoMap(std::move(boneInfoMap))
 {
 	const auto transformations = skeleton.GetBonesTransformations();
 	const auto rootNodeTransformation = transformations.begin();
@@ -15,7 +15,7 @@ Animation::Animation(const Skeleton& skeleton, const std::unordered_map<std::str
 	Fill(rootNodeTransformation->first, rootNode, transformations);
 	RootNode = rootNode;
 
-	ReadMissingBones(RootNode);
+	ReadMissingBones(RootNode, transformations);
 	auto vec = GetBones(-1, BoneInfoMap.find(rootNode.BoneName)->second.Id);
 	RootNode.Children.insert(RootNode.Children.end(), vec.begin(), vec.end());
 	RootNode.ChildrenCount += static_cast<int>(vec.size());
@@ -66,14 +66,15 @@ std::vector<NodeData> Animation::GetBones(const int minId, const int maxId)
 	return vec;
 }
 
-void Animation::ReadMissingBones(NodeData& parentNode)
+void Animation::ReadMissingBones(NodeData& parentNode, const std::map<BoneType, glm::vec3>& transformations)
 {
 	if (parentNode.Type == UNKNOWN)
 		return;
 
+	const auto nextType = static_cast<BoneType>(parentNode.Type + 1);
+
 	const auto minId = BoneInfoMap.find(parentNode.BoneName)->second.Id;
 
-	const auto nextType = static_cast<BoneType>(parentNode.Type + 1);
 	auto maxId = -1;
 	if (nextType != UNKNOWN)
 		maxId = BoneInfoMap.find(Config::BoneTypeNames.at(nextType))->second.Id;
@@ -85,5 +86,5 @@ void Animation::ReadMissingBones(NodeData& parentNode)
 	parentNode.ChildrenCount += static_cast<int>(vec.size());
 
 	for (auto& children : parentNode.Children)
-		ReadMissingBones(children);
+		ReadMissingBones(children, transformations);
 }

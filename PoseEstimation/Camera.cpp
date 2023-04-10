@@ -9,16 +9,16 @@ void Init(std::unique_ptr<cv::VideoCapture>& videoCapture, std::unique_ptr<cv::M
 	image = std::make_unique<ImageConverter>();
 }
 
-Camera::Camera(const CameraLinker<int>& linker, const ImVec2& size, const cv::VideoCaptureAPIs& cameraApi)
+Camera::Camera(const CameraLinker<int>& linker, const ImVec2& size)
 {
 	Init(VideoCapture, Frame, Image);
-	VideoCapture->open(linker.Link, cameraApi);
+	VideoCapture->open(linker.Link, Config::CameraApi);
 }
 
-Camera::Camera(const CameraLinker<const char*>& linker, const ImVec2& size, const cv::VideoCaptureAPIs& cameraApi)
+Camera::Camera(const CameraLinker<const char*>& linker, const ImVec2& size)
 {
 	Init(VideoCapture, Frame, Image);
-	VideoCapture->open(linker.Link, cameraApi);	
+	VideoCapture->open(linker.Link, Config::CameraApi);
 }
 
 bool Camera::OpenCamera() const
@@ -38,7 +38,7 @@ void Camera::SetUpdateCameraThread(std::unique_ptr<std::jthread>& thread, const 
 {
 	thread = std::make_unique<std::jthread>([&]()
 	{
-		while (!cancellationToken)
+		while(!cancellationToken)
 		{
 			Read();			
 		}
@@ -61,7 +61,7 @@ void* Camera::GetTexture() const
 	return Image->GetTexture();
 }
 
-std::unique_ptr<cv::Mat> Camera::GetMat() const
+cv::Mat Camera::GetMat() const
 {
-	return std::make_unique<cv::Mat>(*Frame);
+	return cv::Mat(*Frame);
 }

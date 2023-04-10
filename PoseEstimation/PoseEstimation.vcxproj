@@ -112,7 +112,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;glew32.lib;glew32s.lib;opencv_world470d.lib;glfw3_mt.lib;glfw3dll.lib;assimp/assimp-vc143-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\opencv\build\lib\Debug;D:\opencv\build\lib;C:\Users\Mateusz\Desktop\opencv\build\x64\vc16\lib;glfw\lib-vc2022;D:\glew-2.2.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\opencv\build\lib\Release;D:\opencv\build\lib\Debug;D:\opencv\build\lib;C:\Users\Mateusz\Desktop\opencv\build\x64\vc16\lib;glfw\lib-vc2022;D:\glew-2.2.0\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -126,6 +126,7 @@
       <AdditionalIncludeDirectories>D:\opencv\build\include;glfw\include;imgui;glew;$(SolutionDir)\PoseEstimation;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

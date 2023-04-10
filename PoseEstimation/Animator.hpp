@@ -14,5 +14,4 @@ private:
 
 	std::shared_ptr<Animation> CurrentAnimation{};
 	std::vector<glm::mat4> FinalBoneMatrices{};
-	float CurrentTime = 0.0f;
 };

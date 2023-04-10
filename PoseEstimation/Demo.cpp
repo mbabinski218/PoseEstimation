@@ -4,43 +4,17 @@
 #include "Model.hpp"
 
 // Methods
-Demo::Demo() : Runnable()
+Demo::Demo() : Runnable(),
+	FrontCamera(Config::FrontCameraLinker, Config::FrontCameraSize)
 {
-    auto map = std::map<BoneType, cv::Point2f>{};
-
-	map.try_emplace(HEAD, cv::Point2f(0,0));
-	map.try_emplace(NECK, cv::Point2f(0,0));
-	map.try_emplace(RIGHT_ARM, cv::Point2f(0,0));
-	map.try_emplace(RIGHT_FOREARM, cv::Point2f(0,0));
-	map.try_emplace(RIGHT_HAND, cv::Point2f(0,0));
-	map.try_emplace(LEFT_ARM, cv::Point2f(0,0));
-	map.try_emplace(LEFT_FOREARM, cv::Point2f(0,0));
-	map.try_emplace(LEFT_HAND, cv::Point2f(0,0));
-	map.try_emplace(RIGHT_UP_LEG, cv::Point2f(0,0));
-	map.try_emplace(RIGHT_LEG, cv::Point2f(0,0));
-	map.try_emplace(RIGHT_FOOT, cv::Point2f(0,0));
-	map.try_emplace(LEFT_UP_LEG, cv::Point2f(0,0));
-	map.try_emplace(LEFT_LEG, cv::Point2f(0,0));
-	map.try_emplace(LEFT_FOOT, cv::Point2f(0,0));
-
-    auto skeleton = Skeleton{};
-    skeleton.MoveAndClear();
-    skeleton.Current = map;
-
+    FrontCameraEstimator = std::make_unique<PoseEstimation>(Net, Config::FrontCameraSize);
+    
     DemoWorld.AddModel(1);
-    //DemoWorld.AddModel(2);
+    const auto model = DemoWorld.GetModel(1);
+    Loader::LoadModel(Config::ModelPath, *model);
 
-    auto model1 = DemoWorld.GetModel(1);
-    //auto model2 = DemoWorld.GetModel(2);
-    Loader::LoadModel(Config::ModelPath, *model1);
-    //Loader::LoadModel(Config::ModelPath, *model2);
-
-    const auto animation = Animation(skeleton, model1->GetBoneInfoMap());
-    const auto animationPtr = std::make_shared<Animation>(animation);
-
-    const auto aaa = model1->GetBoneInfoMap();
-
-	model1->Animate(animationPtr);
+    if(FrontCamera.OpenCamera())
+		FrontCamera.SetUpdateCameraThread(FrontCameraUpdateThread, FrontCameraCancellationToken);
 }
 
 // Inside GUI render loop
@@ -58,14 +32,17 @@ void Demo::Loop()
     if (Show3dModel)
     {
         ImGui::Begin("3D model");
-
-        const auto windowSize = ImGui::GetWindowSize();
-        DemoWorld.Update(windowSize, DeltaTime);
-        DemoWorld.Draw();
-        ImGui::Image(DemoWorld.GetTexture(), ImVec2(windowSize.x - 2.0f * Padding.x, windowSize.y - 4.5f * Padding.y));
-
+	        const auto windowSize = ImGui::GetWindowSize();
+	        DemoWorld.Update(windowSize, DeltaTime);
+	        DemoWorld.Draw();
+	        ImGui::Image(DemoWorld.GetTexture(), ImVec2(windowSize.x - 2.0f * Padding.x, windowSize.y - 4.5f * Padding.y));
         ImGui::End();
     }
+
+	ImGui::Begin("Front camera");
+	    FrontCameraEstimator->Update(FrontCamera.GetMat(), DemoWorld);
+	    ImGui::Image(FrontCameraEstimator->GetTexture(), Config::FrontCameraSize);
+    ImGui::End();
 
     // 3d model controls window
     //if (Show3dModelControls)
@@ -114,5 +91,6 @@ void Demo::HandleInput()
 
 Demo::~Demo()
 {
+    FrontCameraCancellationToken = true;
     Shutdown();
 }

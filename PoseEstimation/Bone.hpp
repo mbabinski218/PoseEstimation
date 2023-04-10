@@ -2,8 +2,8 @@
 
 enum BoneType
 {
-    NECK = 0,
-    HEAD = 1,
+    HEAD = 0,
+    NECK = 1,
     LEFT_ARM = 2,
     LEFT_FOREARM = 3,
     LEFT_HAND = 4,

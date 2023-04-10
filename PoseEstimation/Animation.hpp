@@ -14,20 +14,15 @@ struct NodeData
 class Animation
 {
 public:
-	Animation(const Skeleton& skeleton, const std::unordered_map<std::string, BoneInfo>& boneInfoMap, float duration = 1.0f, int ticksPerSecond = 1);
-
-	[[nodiscard]] int GetTicksPerSecond() const { return TicksPerSecond; }
-	[[nodiscard]] float GetDuration() const { return Duration; }
+	Animation(const Skeleton& skeleton, const std::unordered_map<std::string, BoneInfo>& boneInfoMap);
 	[[nodiscard]] const NodeData& GetRootNode() { return RootNode; }
 	[[nodiscard]] const std::unordered_map<std::string, BoneInfo>& GetBoneIdMap() { return BoneInfoMap; }
 
 private:
 	void Fill(BoneType boneType, NodeData& parentNode, const std::map<BoneType, glm::vec3>& transformations);
 	[[nodiscard]] std::vector<NodeData> GetBones(int minId, int maxId);
-	void ReadMissingBones(NodeData& parentNode);
+	void ReadMissingBones(NodeData& parentNode, const std::map<BoneType, glm::vec3>& transformations);
 
-	float Duration{0.0f};
-	int TicksPerSecond{0};
 	NodeData RootNode{};
 	std::unordered_map<std::string, BoneInfo> BoneInfoMap{};
 };

@@ -30,9 +30,9 @@ struct Config
 																				{NECK, RIGHT_UP_LEG}, {NECK, LEFT_UP_LEG},
 																				{RIGHT_UP_LEG, RIGHT_LEG}, {RIGHT_LEG, RIGHT_FOOT},
 																				{LEFT_UP_LEG, LEFT_LEG}, {LEFT_LEG, LEFT_FOOT},
-																				{NECK, HEAD}};
-	inline static std::map<BoneType, std::string> const    BoneTypeNames  = {{NECK,		    "Neck"},
-																				{HEAD,		    "Neck"},
+																				{HEAD, NECK}};
+	inline static std::map<BoneType, std::string> const    BoneTypeNames  = {{HEAD,		    "Head"},
+																				{NECK,		    "Neck"},
 																				{LEFT_ARM,	    "LeftArm"},
 																				{LEFT_FOREARM,  "LeftForeArm"},
 																				{LEFT_HAND,     "LeftHand"},
